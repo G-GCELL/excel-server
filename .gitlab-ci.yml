@@ -24,7 +24,7 @@ build-job:       # This job runs in the build stage, which runs first.
   stage: build
   image: openjdk:17-oracle
   tags:
-    - weat
+    - weat-excel
   before_script:
     - microdnf install findutils
   script:
