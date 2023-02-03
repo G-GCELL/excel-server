@@ -3,6 +3,7 @@ plugins {
 	id 'org.springframework.boot' version '3.0.2'
 	id 'io.spring.dependency-management' version '1.1.0'
 	id 'checkstyle'
+	id 'jacoco'
 }
 
 compileJava.options.encoding = 'UTF-8'
@@ -37,10 +38,8 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-
 	implementation 'org.dhatim:fastexcel:0.14.4'
 
 	compileOnly 'org.projectlombok:lombok'
@@ -55,4 +54,46 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+
+	finalizedBy 'jacocoTestReport'
+}
+
+jacoco {
+	toolVersion = '0.8.8'
+}
+
+jacocoTestReport {
+	reports {
+		html.enabled true
+		xml.enabled true
+		csv.enabled false
+	}
+
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: [
+					"**/GcellExcelServerApplication.class"
+			])
+		}))
+	}
+
+	finalizedBy 'jacocoTestCoverageVerification'
+}
+
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			element = 'CLASS'
+
+			limit {
+				counter = 'LINE'
+				value = 'COVEREDRATIO'
+				minimum = 0.50
+			}
+
+			excludes = [
+					"*.GcellExcelServerApplication"
+			]
+		}
+	}
 }
