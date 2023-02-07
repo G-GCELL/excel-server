@@ -6,7 +6,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,4 +42,5 @@ class ExcelDataJdbcRepositoryTest {
 		return ExcelData.createWithoutId("111111", LocalDateTime.now(), LocalDateTime.now(), "Amazon s3",
 			new BigDecimal("1.00000000000000000001"));
 	}
+
 }
