@@ -39,7 +39,8 @@ class ExcelDataJdbcRepositoryTest {
 	}
 
 	private ExcelData generateExcelData() {
-		return ExcelData.createWithoutId("111111", LocalDateTime.now(), LocalDateTime.now(), "Amazon s3",
+		LocalDateTime now = LocalDateTime.now();
+		return ExcelData.createWithoutId("111111", now, now, "Amazon s3",
 			new BigDecimal("1.00000000000000000001"));
 	}
 
