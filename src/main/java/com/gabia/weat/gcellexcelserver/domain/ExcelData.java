@@ -12,9 +12,11 @@ import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Getter
 @Entity
+@ToString
 @NoArgsConstructor
 @Table(indexes = {
 	@Index(columnList = "accountId"),
@@ -45,9 +47,12 @@ public class ExcelData {
 		this.cost = cost;
 	}
 
-	public static ExcelData createWithoutId(String accountId, LocalDateTime startDate, LocalDateTime endDate,
+	public static ExcelData createWithoutId(String accountId,
+		LocalDateTime startDate,
+		LocalDateTime endDate,
 		String productCode,
 		BigDecimal cost) {
 		return new ExcelData(accountId, startDate, endDate, productCode, cost);
 	}
+
 }
