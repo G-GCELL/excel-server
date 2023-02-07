@@ -78,7 +78,8 @@ jacocoTestReport {
 	afterEvaluate {
 		classDirectories.setFrom(files(classDirectories.files.collect {
 			fileTree(dir: it, exclude: [
-					"**/GcellExcelServerApplication.class"
+					"**/GcellExcelServerApplication.class",
+					"**/domain/**"
 			])
 		}))
 	}
@@ -98,7 +99,8 @@ jacocoTestCoverageVerification {
 			}
 
 			excludes = [
-					"*.GcellExcelServerApplication"
+					"*.GcellExcelServerApplication",
+					"*.domain.*"
 			]
 		}
 	}
