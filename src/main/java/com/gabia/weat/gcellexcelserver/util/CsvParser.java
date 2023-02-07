@@ -37,7 +37,6 @@ public class CsvParser {
 	}
 
 	private static ExcelData recordToExcelData(CSVRecord record) {
-		int endo = 200;
 		return ExcelData.createWithoutId(record.get(0),
 			dateTimeParser(record.get(1)),
 			dateTimeParser(record.get(2)),
