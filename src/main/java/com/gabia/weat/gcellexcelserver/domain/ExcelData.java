@@ -50,4 +50,5 @@ public class ExcelData {
 		BigDecimal cost) {
 		return new ExcelData(accountId, startDate, endDate, productCode, cost);
 	}
+
 }
