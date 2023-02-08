@@ -23,3 +23,9 @@ spring:
     password: ${RABBITMQ_PASSWORD}
     template:
       default-receive-queue: ${QUEUE_NAME}
+    listener:
+      simple:
+        concurrency: ${CONCURRENCY}
+        max-concurrency: ${MAX_CONCURRENCY}
+        prefetch: ${PREFETCH}
+        acknowledge-mode: manual
