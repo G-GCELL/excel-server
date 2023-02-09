@@ -21,3 +21,11 @@ spring:
         max-concurrency: 3
         prefetch: 10
         acknowledge-mode: manual
+
+minio:
+  bucket:
+    name: name
+  access:
+    key: key
+    secret: secret
+  url: url
