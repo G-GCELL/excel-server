@@ -1,16 +1,23 @@
 package com.gabia.weat.gcellexcelserver.repository;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.gabia.weat.gcellexcelserver.domain.ExcelData;
+import com.gabia.weat.gcellexcelserver.dto.FileDto.FileCreateRequestDto;
+import com.gabia.weat.gcellexcelserver.dto.ResultSetDto;
+import com.gabia.weat.gcellexcelserver.util.QueryGenerator;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class ExcelDataJdbcRepository {
 
 	private final JdbcTemplate jdbcTemplate;
+	private final DataSourceProperties properties;
 
 	public void insertExcelDataList(List<ExcelData> excelDataList) {
 		jdbcTemplate.batchUpdate(
@@ -39,6 +47,24 @@ public class ExcelDataJdbcRepository {
 					return excelDataList.size();
 				}
 			});
+	}
+
+	public ResultSetDto getResultSet(FileCreateRequestDto dto) throws SQLException {
+		return new ResultSetDto(getResult(dto), getResultCount(dto));
+	}
+
+	public Integer getResultCount(FileCreateRequestDto dto) {
+		String query = QueryGenerator.generateCountQuery(dto);
+		return jdbcTemplate.queryForObject(query, Integer.class);
+	}
+
+	public ResultSet getResult(FileCreateRequestDto dto) throws SQLException {
+		Connection conn = DriverManager.getConnection(properties.getUrl(), properties.getUsername(),
+			properties.getPassword());
+
+		PreparedStatement statement = conn.prepareStatement(QueryGenerator.generateQuery(dto));
+		statement.setFetchSize(Integer.MIN_VALUE);
+		return statement.executeQuery();
 	}
 
 }
