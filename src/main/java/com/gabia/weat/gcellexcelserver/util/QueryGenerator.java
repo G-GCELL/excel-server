@@ -67,4 +67,5 @@ public class QueryGenerator {
 	public static String generateCountQuery(FileCreateRequestDto dto) {
 		return generateQuery(dto).replace("*", "count(*)");
 	}
+
 }
