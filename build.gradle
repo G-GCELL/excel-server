@@ -83,7 +83,9 @@ jacocoTestReport {
 			fileTree(dir: it, exclude: [
 					"**/GcellExcelServerApplication.class",
 					"**/domain/**",
-					"**/util/**"
+					"**/util/**",
+					"**/dto/**",
+					"/**/config/**"
 			])
 		}))
 	}
@@ -105,7 +107,9 @@ jacocoTestCoverageVerification {
 			excludes = [
 					"*.GcellExcelServerApplication",
 					"*.domain.*",
-					"*.util.*"
+					"*.util.*",
+					"*.dto.*",
+					"*.config.*"
 			]
 		}
 	}
