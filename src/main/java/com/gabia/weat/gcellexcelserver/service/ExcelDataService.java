@@ -22,10 +22,10 @@ public class ExcelDataService {
 	private final MinioService minioService;
 
 	public void createExcelFile(FileCreateRequestDto dto) throws SQLException {
-		File file = new File(Thread.currentThread() + ".xlsx");
+		File file = new File(Thread.currentThread().toString());
 		ResultSetDto result = excelDataJdbcRepository.getResultSet(dto);
 		ExcelWriter.writeExcel(file, result);
-		minioService.uploadFile(file, Thread.currentThread() + ".xlsx");
+		minioService.uploadFile(file, dto.fileName());
 		file.delete();
 	}
 
