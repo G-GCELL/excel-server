@@ -19,7 +19,7 @@ public class MinioService {
 	@Value("${minio.bucket.name}")
 	private String bucketName;
 
-	public String uploadFile(File file, String fileName) {
+	public void uploadFile(File file, String fileName) {
 		try (FileInputStream fileInputStream = new FileInputStream(file)) {
 			minioClient.putObject(PutObjectArgs.builder()
 				.bucket(bucketName)
@@ -30,11 +30,6 @@ public class MinioService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return getPreSignedUrl(fileName);
-	}
-
-	private String getPreSignedUrl(String filename) {
-		return "http://localhost:8080/file/" + filename;
 	}
 
 }
