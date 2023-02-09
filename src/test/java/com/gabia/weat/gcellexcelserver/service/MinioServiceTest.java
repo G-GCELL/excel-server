@@ -1,0 +1,56 @@
+package com.gabia.weat.gcellexcelserver.service;
+
+import static org.mockito.BDDMockito.*;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import io.minio.MinioClient;
+import io.minio.ObjectWriteResponse;
+import io.minio.PutObjectArgs;
+
+@ExtendWith(MockitoExtension.class)
+class MinioServiceTest {
+
+	@Mock
+	private MinioClient minioClient;
+	@InjectMocks
+	private MinioService minioService;
+
+	@DisplayName("미니오 서비스를 통해 업로드하면 미니오 클라이언트를 통해 업로드가 수행된다.")
+	@Test
+	void uploadFileToMinio() throws Exception {
+		// given
+		ObjectWriteResponse writeResponseMock = mock(ObjectWriteResponse.class);
+		given(minioClient.putObject(any())).willReturn(writeResponseMock);
+		ReflectionTestUtils.setField(minioService, "bucketName", "test");
+
+		// when
+		File file = new File("foo.txt");
+		FileOutputStream fileOutputStream = new FileOutputStream(file);
+		fileOutputStream.write("foo".getBytes());
+		minioService.uploadFile(file, "foo.txt");
+
+		// then
+		then(minioClient).should().putObject(any());
+		fileOutputStream.close();
+		file.delete();
+	}
+
+	private PutObjectArgs getPutObjectArgs() {
+		return PutObjectArgs.builder()
+			.bucket("bucket")
+			.object("file")
+			.stream(InputStream.nullInputStream(), 0, -1)
+			.build();
+	}
+}
