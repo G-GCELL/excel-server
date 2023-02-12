@@ -19,7 +19,7 @@ public class MinioService {
 	@Value("${minio.bucket.name}")
 	private String bucketName;
 
-	public void uploadFile(File file, String fileName) {
+	public void uploadFileWithDelete(File file, String fileName) {
 		try (FileInputStream fileInputStream = new FileInputStream(file)) {
 			minioClient.putObject(PutObjectArgs.builder()
 				.bucket(bucketName)
@@ -30,6 +30,7 @@ public class MinioService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		file.delete();
 	}
 
 }
