@@ -29,12 +29,12 @@ class ExcelDataJdbcRepositoryTest {
 		List<ExcelData> excelDataList = List.of(
 			generateExcelData(), generateExcelData(), generateExcelData()
 		);
-		excelDataJdbcRepository.insertExcelDataList(excelDataList);
 
 		// when
-		List<ExcelData> result = excelDataRepository.findAll();
+		excelDataJdbcRepository.insertExcelDataList(excelDataList);
 
 		// then
+		List<ExcelData> result = excelDataRepository.findAll();
 		assertThat(result.size()).isEqualTo(3);
 	}
 

@@ -38,7 +38,7 @@ class MinioServiceTest {
 		File file = new File("foo.txt");
 		FileOutputStream fileOutputStream = new FileOutputStream(file);
 		fileOutputStream.write("foo".getBytes());
-		minioService.uploadFile(file, "foo.txt");
+		minioService.uploadFileWithDelete(file, "foo.txt");
 
 		// then
 		then(minioClient).should().putObject(any());
