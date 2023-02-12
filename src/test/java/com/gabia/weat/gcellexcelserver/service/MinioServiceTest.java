@@ -26,8 +26,8 @@ class MinioServiceTest {
 	@InjectMocks
 	private MinioService minioService;
 
-	@DisplayName("미니오 서비스를 통해 업로드하면 미니오 클라이언트를 통해 업로드가 수행된다.")
 	@Test
+	@DisplayName("미니오 서비스를 통해 업로드하면 미니오 클라이언트를 통해 업로드가 수행된다.")
 	void uploadFileToMinio() throws Exception {
 		// given
 		ObjectWriteResponse writeResponseMock = mock(ObjectWriteResponse.class);
@@ -53,4 +53,5 @@ class MinioServiceTest {
 			.stream(InputStream.nullInputStream(), 0, -1)
 			.build();
 	}
+
 }

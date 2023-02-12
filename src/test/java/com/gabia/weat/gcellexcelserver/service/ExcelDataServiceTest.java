@@ -27,8 +27,8 @@ class ExcelDataServiceTest {
     @InjectMocks
     private ExcelDataService excelDataService;
 
-    @DisplayName("전달받은 조건으로부터 조회한 데이터를 이용해 엑셀 파일 생성 요청을 수행해야 한다.")
     @Test
+    @DisplayName("전달받은 조건으로부터 조회한 데이터를 이용해 엑셀 파일 생성 요청을 수행해야 한다.")
     void createExcelFileTest() throws SQLException {
         // Given
         ResultSetDto resultSetDto = new ResultSetDto(null, 10);
