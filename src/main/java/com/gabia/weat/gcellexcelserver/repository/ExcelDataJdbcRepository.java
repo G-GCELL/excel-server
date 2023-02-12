@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
 
+import com.gabia.weat.gcellexcelserver.repository.query.QueryGenerator;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -17,7 +18,6 @@ import org.springframework.stereotype.Repository;
 import com.gabia.weat.gcellexcelserver.domain.ExcelData;
 import com.gabia.weat.gcellexcelserver.dto.FileDto.FileCreateRequestDto;
 import com.gabia.weat.gcellexcelserver.dto.ResultSetDto;
-import com.gabia.weat.gcellexcelserver.util.QueryGenerator;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,6 +27,7 @@ public class ExcelDataJdbcRepository {
 
 	private final JdbcTemplate jdbcTemplate;
 	private final DataSourceProperties properties;
+	private final QueryGenerator queryGenerator;
 
 	public void insertExcelDataList(List<ExcelData> excelDataList) {
 		jdbcTemplate.batchUpdate(
@@ -54,7 +55,7 @@ public class ExcelDataJdbcRepository {
 	}
 
 	public Integer getResultCount(FileCreateRequestDto dto) {
-		String query = QueryGenerator.generateCountQuery(dto);
+		String query = queryGenerator.generateCountQuery(dto);
 		return jdbcTemplate.queryForObject(query, Integer.class);
 	}
 
@@ -62,7 +63,7 @@ public class ExcelDataJdbcRepository {
 		Connection conn = DriverManager.getConnection(properties.getUrl(), properties.getUsername(),
 			properties.getPassword());
 
-		PreparedStatement statement = conn.prepareStatement(QueryGenerator.generateQuery(dto));
+		PreparedStatement statement = conn.prepareStatement(queryGenerator.generateQuery(dto));
 		statement.setFetchSize(Integer.MIN_VALUE);
 		return statement.executeQuery();
 	}
