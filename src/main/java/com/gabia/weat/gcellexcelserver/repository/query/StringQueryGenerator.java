@@ -1,13 +1,14 @@
 package com.gabia.weat.gcellexcelserver.repository.query;
 
-import com.gabia.weat.gcellexcelserver.dto.FileDto;
+import com.gabia.weat.gcellexcelserver.dto.FileDto.FileCreateRequestDto;
+
 import org.springframework.stereotype.Component;
 
 @Component
 public class StringQueryGenerator implements QueryGenerator {
 
     @Override
-    public String generateQuery(FileDto.FileCreateRequestDto dto) {
+    public String generateQuery(FileCreateRequestDto dto) {
         StringBuilder stringBuilder = new StringBuilder("select * from excel_data where 1=1 ");
 
         if (dto.inAccountId() != null) {
@@ -68,7 +69,7 @@ public class StringQueryGenerator implements QueryGenerator {
     }
 
     @Override
-    public String generateCountQuery(FileDto.FileCreateRequestDto dto) {
+    public String generateCountQuery(FileCreateRequestDto dto) {
         return generateQuery(dto).replace("*", "count(*)");
     }
 
