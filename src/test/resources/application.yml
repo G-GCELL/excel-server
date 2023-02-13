@@ -15,6 +15,8 @@ spring:
     password: password
     template:
       default-receive-queue: queue
+      exchange: exchange
+      routing-key: routingKey
     listener:
       simple:
         concurrency: 1
