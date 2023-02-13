@@ -23,6 +23,8 @@ spring:
     password: ${RABBITMQ_PASSWORD}
     template:
       default-receive-queue: ${QUEUE_NAME}
+      exchange: ${EXCHANGE_NAME}
+      routing-key: ${ROUTING_KEY}
     listener:
       simple:
         concurrency: ${CONCURRENCY}
