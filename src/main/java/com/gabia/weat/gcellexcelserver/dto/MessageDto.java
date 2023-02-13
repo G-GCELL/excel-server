@@ -11,4 +11,5 @@ public class MessageDto {
 		Integer progressRate
 	) {
 	}
+
 }
