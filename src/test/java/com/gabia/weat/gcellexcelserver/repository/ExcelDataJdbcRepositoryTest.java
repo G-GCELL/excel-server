@@ -22,19 +22,19 @@ class ExcelDataJdbcRepositoryTest {
 	@Autowired
 	private ExcelDataJdbcRepository excelDataJdbcRepository;
 
-	@DisplayName("엑셀 데이터 다량 삽입 테스트")
 	@Test
+	@DisplayName("엑셀 데이터 리스트를 전달하면 해당 값들을 bulk insert 한다.")
 	void excelDataBulkInsert() {
 		// given
 		List<ExcelData> excelDataList = List.of(
 			generateExcelData(), generateExcelData(), generateExcelData()
 		);
-		excelDataJdbcRepository.insertExcelDataList(excelDataList);
 
 		// when
-		List<ExcelData> result = excelDataRepository.findAll();
+		excelDataJdbcRepository.insertExcelDataList(excelDataList);
 
 		// then
+		List<ExcelData> result = excelDataRepository.findAll();
 		assertThat(result.size()).isEqualTo(3);
 	}
 

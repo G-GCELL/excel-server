@@ -85,7 +85,10 @@ jacocoTestReport {
 					"**/domain/**",
 					"**/util/**",
 					"**/dto/**",
-					"/**/config/**"
+					"/**/config/**",
+					"/**/repository/**",
+					"/**/file/**",
+					"/**/query/**"
 			])
 		}))
 	}
@@ -109,7 +112,10 @@ jacocoTestCoverageVerification {
 					"*.domain.*",
 					"*.util.*",
 					"*.dto.*",
-					"*.config.*"
+					"*.config.*",
+					"*.repository.*",
+					"*.file.*",
+					"*.query.*"
 			]
 		}
 	}

@@ -29,3 +29,11 @@ spring:
         max-concurrency: ${MAX_CONCURRENCY}
         prefetch: ${PREFETCH}
         acknowledge-mode: manual
+
+minio:
+  bucket:
+    name: ${MINIO_BUCKET_NAME}
+  access:
+    key: ${MINIO_KEY}
+    secret: ${MINIO_PASSWORD}
+  url: http://${MINIO_HOST}:${MINIO_PORT}
