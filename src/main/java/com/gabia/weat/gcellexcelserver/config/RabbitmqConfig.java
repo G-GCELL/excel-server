@@ -75,16 +75,18 @@ public class RabbitmqConfig {
 		rabbitTemplate.setMessageConverter(messageConverter);
 		rabbitTemplate.setMandatory(true);
 
+		// 임시 코드
 		rabbitTemplate.setReturnsCallback(returned -> {
 			log.info("[반환된 메시지] " + returned);
 		});
 
+		// 임시 코드
 		rabbitTemplate.setConfirmCallback((correlationData, ack, cause) -> {
-			if (ack && Objects.requireNonNull(correlationData).getReturned() == null) {
-				log.info("[메시지 발행 성공]");
+			if (!ack || Objects.requireNonNull(correlationData).getReturned() != null) {
+				log.info("[메시지 발행 실패] " + cause);
 				return;
 			}
-			log.info("[메시지 발행 실패] " + cause);
+			log.info("[메시지 발행 성공]");
 		});
 
 		return rabbitTemplate;
