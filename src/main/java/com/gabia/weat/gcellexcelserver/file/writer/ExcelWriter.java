@@ -1,6 +1,11 @@
 package com.gabia.weat.gcellexcelserver.file.writer;
 
+import com.gabia.weat.gcellexcelserver.domain.type.MessageType;
+import com.gabia.weat.gcellexcelserver.dto.MessageDto.CreateProgressMsgDto;
+import com.gabia.weat.gcellexcelserver.dto.MsgMetaDto;
 import com.gabia.weat.gcellexcelserver.dto.ResultSetDto;
+import com.gabia.weat.gcellexcelserver.service.producer.CreateProgressProducer;
+
 import org.dhatim.fastexcel.Workbook;
 import org.dhatim.fastexcel.Worksheet;
 import org.springframework.stereotype.Component;
@@ -11,12 +16,16 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
+import lombok.RequiredArgsConstructor;
+
 @Component
+@RequiredArgsConstructor
 public class ExcelWriter {
 
     private final int MAX_ROWS = 1_048_576;
+    private final CreateProgressProducer createProgressProducer;
 
-    public File write(ResultSetDto resultSetDto, String fileName) {
+    public File writeWithProgress(ResultSetDto resultSetDto, String fileName, MsgMetaDto dto) {
         validateResult(resultSetDto);
         File file = new File(fileName);
         try (FileOutputStream fileOutputStream = new FileOutputStream(file);
@@ -25,10 +34,15 @@ public class ExcelWriter {
             String[] excelColumns = getExcelColumns(resultSet.getMetaData());
             Worksheet[] worksheets = setSheetWithHeader(workbook, resultSetDto.resultSetCount(), excelColumns);
 
+            int standard = calculateStandard(resultSetDto.resultSetCount());
             int rowCount = 1;
             while (resultSet.next()) {
+                if (rowCount % standard == 0 && rowCount / standard < 10) {
+                    sendProgressRateMsg(dto, (rowCount / standard) * 10);
+                }
                 writeExcelRow(worksheets, rowCount++, resultSet, excelColumns);
             }
+            sendProgressRateMsg(dto, 100);
             workbook.finish();
         } catch (Exception exception) {
             exception.printStackTrace();
@@ -42,6 +56,13 @@ public class ExcelWriter {
             // TODO: Global Exception 처리
             throw new RuntimeException();
         }
+    }
+
+    private int calculateStandard(Integer resultSetCount) {
+        if (resultSetCount / 10 == 0) {
+            return 1;
+        }
+        return resultSetCount / 10;
     }
 
     private String[] getExcelColumns(ResultSetMetaData metaData) throws SQLException {
@@ -75,6 +96,15 @@ public class ExcelWriter {
         for (int i = 0; i < excelColumns.length; i++) {
             worksheets[rowCount / MAX_ROWS].value(currentRow, i, resultSet.getString(excelColumns[i]));
         }
+    }
+
+    private void sendProgressRateMsg(MsgMetaDto dto, int rate) {
+        createProgressProducer.sendMessage(new CreateProgressMsgDto(
+            dto.memberId(),
+            MessageType.FILE_CREATION_PROGRESS,
+            dto.fileName(),
+            rate
+        ));
     }
 
 }
