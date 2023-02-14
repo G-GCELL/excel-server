@@ -38,4 +38,4 @@ minio:
   access:
     key: ${MINIO_KEY}
     secret: ${MINIO_PASSWORD}
-  url: http://${MINIO_HOST}:${MINIO_PORT}
+  url: ${MINIO_URL}
