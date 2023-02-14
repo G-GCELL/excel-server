@@ -1,6 +1,12 @@
 package com.gabia.weat.gcellexcelserver.repository.query;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.gabia.weat.gcellexcelserver.dto.FileDto.FileCreateRequestDto;
+import com.gabia.weat.gcellexcelserver.dto.JdbcDto.QuerySetDto;
 
 import org.springframework.stereotype.Component;
 
@@ -8,69 +14,86 @@ import org.springframework.stereotype.Component;
 public class StringQueryGenerator implements QueryGenerator {
 
     @Override
-    public String generateQuery(FileCreateRequestDto dto) {
-        StringBuilder stringBuilder = new StringBuilder("select * from excel_data where 1=1 ");
+    public QuerySetDto generateQuery(FileCreateRequestDto dto) {
+        StringBuilder stringBuilder;
+        List<String> conditions = new ArrayList<>();
+        Map<Integer, Object> paramMap = new HashMap<>();
+        int paramOrder = 0;
 
         if (dto.inAccountId() != null) {
-            stringBuilder.append("and account_id in (");
+            stringBuilder = new StringBuilder("account_id in (");
             for (String accountId : dto.inAccountId()) {
-                stringBuilder.append(accountId).append(", ");
+                paramMap.put(++paramOrder, accountId);
+                stringBuilder.append("?,");
             }
-            stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
-            stringBuilder.append(") ");
+            stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+            conditions.add(stringBuilder.append(")").toString());
         }
 
         if (dto.notAccountId() != null) {
-            stringBuilder.append("and account_id not in (");
+            stringBuilder = new StringBuilder("account_id not in (");
             for (String accountId : dto.notAccountId()) {
-                stringBuilder.append(accountId).append(", ");
+                paramMap.put(++paramOrder, accountId);
+                stringBuilder.append("?,");
             }
-            stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
-            stringBuilder.append(") ");
+            stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+            conditions.add(stringBuilder.append(")").toString());
         }
 
         if (dto.inProductCode() != null) {
-            stringBuilder.append("and product_code in (");
+            stringBuilder = new StringBuilder("product_code in (");
             for (String productCode : dto.inProductCode()) {
-                stringBuilder.append(productCode).append(", ");
+                paramMap.put(++paramOrder, productCode);
+                stringBuilder.append("?,");
             }
-            stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
-            stringBuilder.append(") ");
+            stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+            conditions.add(stringBuilder.append(")").toString());
         }
 
         if (dto.notProductCode() != null) {
-            stringBuilder.append("and product_code not in (");
+            stringBuilder = new StringBuilder("product_code not in (");
             for (String productCode : dto.notProductCode()) {
-                stringBuilder.append(productCode).append(", ");
+                paramMap.put(++paramOrder, productCode);
+                stringBuilder.append("?,");
             }
-            stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
-            stringBuilder.append(") ");
+            stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+            conditions.add(stringBuilder.append(")").toString());
         }
 
-        stringBuilder.append("and (Date(start_date) between '");
-        stringBuilder.append(dto.startDateMin());
-        stringBuilder.append("' and '");
-        stringBuilder.append(dto.startDateMax());
-        stringBuilder.append("') ");
+        if (dto.startDateMin() != null && dto.startDateMax() != null) {
+            conditions.add("(start_date between ? and ?)");
+            paramMap.put(++paramOrder, dto.startDateMin());
+            paramMap.put(++paramOrder, dto.startDateMax());
+        }
 
-        stringBuilder.append("and (Date(end_date) between '");
-        stringBuilder.append(dto.endDateMin());
-        stringBuilder.append("' and '");
-        stringBuilder.append(dto.endDateMax());
-        stringBuilder.append("') ");
+        if (dto.endDateMin() != null && dto.endDateMax() != null) {
+            conditions.add("(end_date between ? and ?)");
+            paramMap.put(++paramOrder, dto.endDateMin());
+            paramMap.put(++paramOrder, dto.endDateMax());
+        }
 
-        stringBuilder.append("and (cost between ");
-        stringBuilder.append(dto.costMin());
-        stringBuilder.append(" and ");
-        stringBuilder.append(dto.costMax());
-        stringBuilder.append(")");
+        if (dto.costMin() != null && dto.costMax() != null) {
+            conditions.add("(cost between ? and ?)");
+            paramMap.put(++paramOrder, dto.costMin());
+            paramMap.put(++paramOrder, dto.costMax());
+        }
 
-        return stringBuilder.toString();
+        String sql = "select * from excel_data";
+        if (conditions.size() > 0) {
+            stringBuilder = new StringBuilder(sql);
+            stringBuilder.append(" where ");
+            for (String condition : conditions) {
+                stringBuilder.append(condition).append(" and ");
+            }
+            sql = stringBuilder.substring(0, stringBuilder.length() - 5);
+        }
+        return new QuerySetDto(sql, paramMap);
     }
 
     @Override
-    public String generateCountQuery(FileCreateRequestDto dto) {
-        return generateQuery(dto).replace("*", "count(*)");
+    public QuerySetDto generateCountQuery(FileCreateRequestDto dto) {
+        QuerySetDto querySet = generateQuery(dto);
+        return new QuerySetDto(querySet.sql().replace("*", "count(*)"), querySet.params());
     }
 
 }

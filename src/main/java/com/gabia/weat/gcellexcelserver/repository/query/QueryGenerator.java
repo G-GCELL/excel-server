@@ -1,11 +1,12 @@
 package com.gabia.weat.gcellexcelserver.repository.query;
 
 import com.gabia.weat.gcellexcelserver.dto.FileDto.FileCreateRequestDto;
+import com.gabia.weat.gcellexcelserver.dto.JdbcDto.QuerySetDto;
 
 public interface QueryGenerator {
 
-    String generateQuery(FileCreateRequestDto dto);
+    QuerySetDto generateQuery(FileCreateRequestDto dto);
 
-    String generateCountQuery(FileCreateRequestDto dto);
+    QuerySetDto generateCountQuery(FileCreateRequestDto dto);
 
 }
