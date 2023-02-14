@@ -3,7 +3,7 @@ package com.gabia.weat.gcellexcelserver.service;
 import static org.mockito.BDDMockito.*;
 
 import com.gabia.weat.gcellexcelserver.dto.FileDto;
-import com.gabia.weat.gcellexcelserver.dto.ResultSetDto;
+import com.gabia.weat.gcellexcelserver.dto.JdbcDto.ResultSetDto;
 import com.gabia.weat.gcellexcelserver.file.writer.ExcelWriter;
 import com.gabia.weat.gcellexcelserver.repository.ExcelDataJdbcRepository;
 import com.gabia.weat.gcellexcelserver.service.producer.CreateProgressProducer;
