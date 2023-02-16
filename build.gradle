@@ -43,8 +43,6 @@ dependencies {
 	implementation 'org.dhatim:fastexcel:0.14.4'
 	implementation 'org.springframework.boot:spring-boot-starter-amqp'
 
-	implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.10.0'
-
 	implementation 'io.minio:minio:8.3.0'
 	implementation 'com.squareup.okhttp3:okhttp:4.9.1'
 	implementation 'commons-io:commons-io:2.11.0'
