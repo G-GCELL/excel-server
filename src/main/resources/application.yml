@@ -6,6 +6,9 @@ spring:
     url: jdbc:${DB}://${DB_HOST}:${DB_PORT}/${DB_NAME}?rewriteBatchedStatements=true
     username: ${DB_USER}
     password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: ${DB_POOL_MAX_SIZE}
+      connection-timeout: ${DB_CONNECTION_TIMEOUT}
 
   jpa:
     show-sql: true
