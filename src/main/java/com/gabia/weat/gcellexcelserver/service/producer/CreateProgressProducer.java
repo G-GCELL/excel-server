@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class CreateProgressProducer {
+public class CreateProgressProducer implements Producer<CreateProgressMsgDto> {
 
 	private final RabbitTemplate rabbitTemplate;
 
