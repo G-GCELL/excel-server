@@ -18,10 +18,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CreateRequestConsumer {
+public class CreateRequestConsumer implements Consumer<FileCreateRequestDto> {
 
 	private final ExcelDataService excelDataService;
 
+	@Override
 	@RabbitListener(queues = "${rabbitmq.queue.file-create-request-queue}", containerFactory = "fileCreateRequestListenerFactory")
 	public void receiveMessage(FileCreateRequestDto fileCreateRequestDto, Channel channel,
 		@Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException, SQLException {
