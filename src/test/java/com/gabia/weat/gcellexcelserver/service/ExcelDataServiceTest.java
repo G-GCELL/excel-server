@@ -6,7 +6,7 @@ import com.gabia.weat.gcellexcelserver.dto.FileDto;
 import com.gabia.weat.gcellexcelserver.dto.JdbcDto.ResultSetDto;
 import com.gabia.weat.gcellexcelserver.file.writer.ExcelWriter;
 import com.gabia.weat.gcellexcelserver.repository.ExcelDataJdbcRepository;
-import com.gabia.weat.gcellexcelserver.service.producer.CreateProgressProducer;
+import com.gabia.weat.gcellexcelserver.service.producer.FileCreateProgressProducer;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ class ExcelDataServiceTest {
     @Mock
     private ExcelWriter excelWriter;
     @Mock
-    private CreateProgressProducer createProgressProducer;
+    private FileCreateProgressProducer fileCreateProgressProducer;
     @InjectMocks
     private ExcelDataService excelDataService;
 
