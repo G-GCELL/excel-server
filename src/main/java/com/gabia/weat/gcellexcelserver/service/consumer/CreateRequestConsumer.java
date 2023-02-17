@@ -22,7 +22,7 @@ public class CreateRequestConsumer {
 
 	private final ExcelDataService excelDataService;
 
-	@RabbitListener(queues = "${spring.rabbitmq.template.default-receive-queue}")
+	@RabbitListener(queues = "${rabbitmq.queue.file-create-request-queue}", containerFactory = "fileCreateRequestListenerFactory")
 	public void receiveMessage(FileCreateRequestDto fileCreateRequestDto, Channel channel,
 		@Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException, SQLException {
 
