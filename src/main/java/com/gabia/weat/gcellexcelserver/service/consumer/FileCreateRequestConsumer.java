@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CreateRequestConsumer implements Consumer<FileCreateRequestDto> {
+public class FileCreateRequestConsumer implements Consumer<FileCreateRequestDto> {
 
 	private final ExcelDataService excelDataService;
 

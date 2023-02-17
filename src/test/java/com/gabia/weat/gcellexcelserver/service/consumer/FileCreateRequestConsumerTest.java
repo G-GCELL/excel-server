@@ -20,14 +20,14 @@ import com.rabbitmq.client.Channel;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
-public class CreateRequestConsumerTest {
+public class FileCreateRequestConsumerTest {
 
 	@Mock
 	private Channel channel;
 	@Mock
 	private ExcelDataService excelDataService;
 	@InjectMocks
-	private CreateRequestConsumer createRequestConsumer;
+	private FileCreateRequestConsumer fileCreateRequestConsumer;
 
 	@Test
 	@DisplayName("엑셀_생성_요청_메시지_소비_테스트")
@@ -37,7 +37,7 @@ public class CreateRequestConsumerTest {
 		long tag = 0L;
 
 		// when & then
-		assertThatCode(() -> createRequestConsumer.receiveMessage(fileCreateRequestDto, channel, tag)).doesNotThrowAnyException();
+		assertThatCode(() -> fileCreateRequestConsumer.receiveMessage(fileCreateRequestDto, channel, tag)).doesNotThrowAnyException();
 		verify(channel, times(1)).basicAck(eq(tag), anyBoolean());
 	}
 
