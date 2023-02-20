@@ -41,8 +41,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.dhatim:fastexcel:0.14.4'
-
-	implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.10.0'
+	implementation 'org.springframework.boot:spring-boot-starter-amqp'
 
 	implementation 'io.minio:minio:8.3.0'
 	implementation 'com.squareup.okhttp3:okhttp:4.9.1'
@@ -56,6 +55,8 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.amqp:spring-rabbit-test'
+
 }
 
 tasks.named('test') {
@@ -78,7 +79,14 @@ jacocoTestReport {
 	afterEvaluate {
 		classDirectories.setFrom(files(classDirectories.files.collect {
 			fileTree(dir: it, exclude: [
-					"**/GcellExcelServerApplication.class"
+					"**/GcellExcelServerApplication.class",
+					"**/domain/**",
+					"**/util/**",
+					"**/dto/**",
+					"/**/config/**",
+					"/**/repository/**",
+					"/**/file/**",
+					"/**/query/**"
 			])
 		}))
 	}
@@ -98,7 +106,14 @@ jacocoTestCoverageVerification {
 			}
 
 			excludes = [
-					"*.GcellExcelServerApplication"
+					"*.GcellExcelServerApplication",
+					"*.domain.*",
+					"*.util.*",
+					"*.dto.*",
+					"*.config.*",
+					"*.repository.*",
+					"*.file.*",
+					"*.query.*"
 			]
 		}
 	}

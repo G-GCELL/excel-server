@@ -7,3 +7,27 @@ spring:
       hibernate:
         format_sql: true
         default_batch_fetch_size: 100
+
+  rabbitmq:
+    host: host
+    port: 0000
+    username: user
+    password: password
+    template:
+      default-receive-queue: queue
+      exchange: exchange
+      routing-key: routingKey
+    listener:
+      simple:
+        concurrency: 1
+        max-concurrency: 3
+        prefetch: 10
+        acknowledge-mode: manual
+
+minio:
+  bucket:
+    name: name
+  access:
+    key: key
+    secret: secret
+  url: url
