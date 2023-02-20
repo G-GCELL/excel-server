@@ -2,16 +2,20 @@ package com.gabia.weat.gcellexcelserver.file.reader;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.sql.Connection;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.sql.DataSource;
+
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import com.gabia.weat.gcellexcelserver.domain.ExcelData;
 import com.gabia.weat.gcellexcelserver.repository.ExcelDataJdbcRepository;
@@ -25,25 +29,36 @@ public class CsvParser {
 	private final ExcelDataJdbcRepository excelDataJdbcRepository;
 	private final int INSERT_UNIT_SIZE = 10_000;
 	private final String[] HEADERS_ORDER_RULE = {"account_id", "usage_date", "product_code", "cost"};
+	private final DataSource dataSource;
 
 	public void insertWithCsv(String csvFilePath) {
+
+		TransactionSynchronizationManager.initSynchronization();
+		Connection connection = DataSourceUtils.getConnection(dataSource);
+
 		try (FileInputStream fileInputStream = new FileInputStream(csvFilePath)) {
+			connection.setAutoCommit(false);
 			InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8");
 			BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 			skipHeader(bufferedReader);
 
 			String line;
-			List<ExcelData> excelDataList = new ArrayList<>();
+			List<ExcelData> excelDataList = new ArrayList<>(INSERT_UNIT_SIZE);
 			while ((line = bufferedReader.readLine()) != null) {
 				excelDataList.add(parseLine(line));
 				if (excelDataList.size() % INSERT_UNIT_SIZE == 0) {
 					excelDataJdbcRepository.insertExcelDataList(excelDataList);
-					excelDataList = new ArrayList<>();
+					excelDataList = new ArrayList<>(INSERT_UNIT_SIZE);
 				}
 			}
 			excelDataJdbcRepository.insertExcelDataList(excelDataList);
-		} catch (IOException e) {
+			connection.commit();
+		} catch (Exception e) {
 			e.printStackTrace();
+		} finally {
+			DataSourceUtils.releaseConnection(connection, dataSource);
+			TransactionSynchronizationManager.unbindResource(dataSource);
+			TransactionSynchronizationManager.clearSynchronization();
 		}
 	}
 
