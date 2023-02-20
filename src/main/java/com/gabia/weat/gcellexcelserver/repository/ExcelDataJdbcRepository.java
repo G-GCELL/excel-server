@@ -59,10 +59,6 @@ public class ExcelDataJdbcRepository {
 	}
 
 	public ResultSetDto getResultSet(FileCreateRequestDto dto) throws SQLException {
-		return new ResultSetDto(getResult(dto), getResultCount(dto));
-	}
-
-	public Integer getResultCount(FileCreateRequestDto dto) throws SQLException {
 		Connection conn = getConnection();
 
 		QuerySetDto querySet = queryGenerator.generateCountQuery(dto);
@@ -70,23 +66,20 @@ public class ExcelDataJdbcRepository {
 		for (Entry<Integer, Object> entry : querySet.params().entrySet()) {
 			bindParam(statement, entry);
 		}
-
 		ResultSet resultSet = statement.executeQuery();
 		resultSet.next();
-		return resultSet.getInt(1);
-	}
+		int count = resultSet.getInt(1);
 
-	public ResultSet getResult(FileCreateRequestDto dto) throws SQLException {
-		Connection conn = getConnection();
-
-		QuerySetDto querySet = queryGenerator.generateQuery(dto);
-		PreparedStatement statement = conn.prepareStatement(querySet.sql());
+		querySet = queryGenerator.generateQuery(dto);
+		statement = conn.prepareStatement(querySet.sql());
 		for (Entry<Integer, Object> entry : querySet.params().entrySet()) {
 			bindParam(statement, entry);
 		}
 
 		statement.setFetchSize(Integer.MIN_VALUE);
-		return statement.executeQuery();
+		resultSet = statement.executeQuery();
+
+		return new ResultSetDto(resultSet, count);
 	}
 
 	private Connection getConnection() throws SQLException {
