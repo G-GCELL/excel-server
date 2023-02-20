@@ -2,9 +2,9 @@ package com.gabia.weat.gcellexcelserver.file.writer;
 
 import com.gabia.weat.gcellexcelserver.domain.type.MessageType;
 import com.gabia.weat.gcellexcelserver.dto.JdbcDto.ResultSetDto;
-import com.gabia.weat.gcellexcelserver.dto.MessageDto.CreateProgressMsgDto;
+import com.gabia.weat.gcellexcelserver.dto.MessageDto.FileCreateProgressMsgDto;
 import com.gabia.weat.gcellexcelserver.dto.MsgMetaDto;
-import com.gabia.weat.gcellexcelserver.service.producer.CreateProgressProducer;
+import com.gabia.weat.gcellexcelserver.service.producer.FileCreateProgressProducer;
 
 import org.dhatim.fastexcel.Workbook;
 import org.dhatim.fastexcel.Worksheet;
@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class ExcelWriter {
 
     private final int MAX_ROWS = 1_048_576;
-    private final CreateProgressProducer createProgressProducer;
+    private final FileCreateProgressProducer fileCreateProgressProducer;
 
     public File writeWithProgress(ResultSetDto resultSetDto, String fileName, MsgMetaDto dto) {
         validateResult(resultSetDto);
@@ -116,7 +116,7 @@ public class ExcelWriter {
     }
 
     private void sendProgressRateMsg(MsgMetaDto dto, int rate) {
-        createProgressProducer.sendMessage(new CreateProgressMsgDto(
+        fileCreateProgressProducer.sendMessage(new FileCreateProgressMsgDto(
             dto.memberId(),
             MessageType.FILE_CREATION_PROGRESS,
             dto.fileName(),

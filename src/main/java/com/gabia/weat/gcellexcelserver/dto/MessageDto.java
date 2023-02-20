@@ -4,7 +4,7 @@ import com.gabia.weat.gcellexcelserver.domain.type.MessageType;
 
 public class MessageDto {
 
-	public record CreateProgressMsgDto(
+	public record FileCreateProgressMsgDto(
 		Long memberId,
 		MessageType messageType,
 		String memberFileName,

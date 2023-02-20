@@ -5,7 +5,7 @@ import java.sql.SQLException;
 
 import com.gabia.weat.gcellexcelserver.domain.type.MessageType;
 import com.gabia.weat.gcellexcelserver.dto.JdbcDto.ResultSetDto;
-import com.gabia.weat.gcellexcelserver.dto.MessageDto.CreateProgressMsgDto;
+import com.gabia.weat.gcellexcelserver.dto.MessageDto.FileCreateProgressMsgDto;
 import com.gabia.weat.gcellexcelserver.dto.MsgMetaDto;
 import com.gabia.weat.gcellexcelserver.file.writer.ExcelWriter;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.gabia.weat.gcellexcelserver.dto.FileDto.FileCreateRequestDto;
 import com.gabia.weat.gcellexcelserver.repository.ExcelDataJdbcRepository;
-import com.gabia.weat.gcellexcelserver.service.producer.CreateProgressProducer;
+import com.gabia.weat.gcellexcelserver.service.producer.FileCreateProgressProducer;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,7 +25,7 @@ public class ExcelDataService {
 	private final ExcelDataJdbcRepository excelDataJdbcRepository;
 	private final MinioService minioService;
 	private final ExcelWriter excelWriter;
-	private final CreateProgressProducer createProgressProducer;
+	private final FileCreateProgressProducer fileCreateProgressProducer;
 
 	public void createExcelFile(FileCreateRequestDto dto) throws SQLException {
 		ResultSetDto result = excelDataJdbcRepository.getResultSet(dto);
@@ -36,7 +36,7 @@ public class ExcelDataService {
 	}
 
 	private void sendCompletionMsg(MsgMetaDto dto) {
-		createProgressProducer.sendMessage(new CreateProgressMsgDto(
+		fileCreateProgressProducer.sendMessage(new FileCreateProgressMsgDto(
 			dto.memberId(),
 			MessageType.FILE_CREATION_COMPLETE,
 			dto.fileName(),

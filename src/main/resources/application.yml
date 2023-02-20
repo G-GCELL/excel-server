@@ -19,21 +19,8 @@ spring:
         format_sql: true
         default_batch_fetch_size: ${FETCH_SIZE}
 
-  rabbitmq:
-    host: ${RABBITMQ_HOST}
-    port: ${RABBITMQ_PORT}
-    username: ${RABBITMQ_USER}
-    password: ${RABBITMQ_PASSWORD}
-    template:
-      default-receive-queue: ${QUEUE_NAME}
-      exchange: ${EXCHANGE_NAME}
-      routing-key: ${ROUTING_KEY}
-    listener:
-      simple:
-        concurrency: ${CONCURRENCY}
-        max-concurrency: ${MAX_CONCURRENCY}
-        prefetch: ${PREFETCH}
-        acknowledge-mode: manual
+  application:
+    name: ${SERVER_NAME}
 
 minio:
   bucket:
@@ -42,3 +29,17 @@ minio:
     key: ${MINIO_KEY}
     secret: ${MINIO_PASSWORD}
   url: ${MINIO_URL}
+
+rabbitmq:
+  host: ${RABBITMQ_HOST}
+  port: ${RABBITMQ_PORT}
+  username: ${RABBITMQ_USER}
+  password: ${RABBITMQ_PASSWORD}
+  exchange:
+    file-create-progress-exchange: ${FILE_CREATE_PROGRESS_EXCHANGE}
+  queue:
+    file-create-request-queue: ${FILE_CREATE_REQUEST_QUEUE}
+  listener:
+    concurrency: ${LISTENER_CONCURRENCY}
+    max-concurrency: ${LISTENER_MAX_CONCURRENCY}
+    prefetch: ${LISTENER_PREFETCH}
