@@ -10,14 +10,17 @@ import com.gabia.weat.gcellexcelserver.dto.MsgMetaDto;
 import com.gabia.weat.gcellexcelserver.file.writer.ExcelWriter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import com.gabia.weat.gcellexcelserver.dto.FileDto.FileCreateRequestDto;
 import com.gabia.weat.gcellexcelserver.repository.ExcelDataJdbcRepository;
 import com.gabia.weat.gcellexcelserver.service.producer.FileCreateProgressProducer;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Service
+@Validated
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ExcelDataService {
@@ -27,7 +30,7 @@ public class ExcelDataService {
 	private final ExcelWriter excelWriter;
 	private final FileCreateProgressProducer fileCreateProgressProducer;
 
-	public void createExcelFile(FileCreateRequestDto dto) throws SQLException {
+	public void createExcelFile(@Valid FileCreateRequestDto dto) throws SQLException {
 		ResultSetDto result = excelDataJdbcRepository.getResultSet(dto);
 		MsgMetaDto msgMetaDto = new MsgMetaDto(dto.memberId(), dto.fileName());
 		File excelFile = excelWriter.writeWithProgress(result, Thread.currentThread().toString(), msgMetaDto);

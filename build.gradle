@@ -42,6 +42,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.dhatim:fastexcel:0.14.4'
 	implementation 'org.springframework.boot:spring-boot-starter-amqp'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
 	implementation 'io.minio:minio:8.3.0'
 	implementation 'com.squareup.okhttp3:okhttp:4.9.1'
