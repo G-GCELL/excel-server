@@ -2,7 +2,7 @@ package com.gabia.weat.gcellexcelserver.service;
 
 import static org.mockito.BDDMockito.*;
 
-import com.gabia.weat.gcellexcelserver.dto.FileDto.FileCreateRequestDto;
+import com.gabia.weat.gcellexcelserver.dto.FileCreateRequestDto;
 import com.gabia.weat.gcellexcelserver.dto.JdbcDto.ResultSetDto;
 import com.gabia.weat.gcellexcelserver.dto.MessageWrapperDto;
 import com.gabia.weat.gcellexcelserver.file.writer.ExcelWriter;
@@ -54,6 +54,7 @@ class ExcelDataServiceTest {
 		return new FileCreateRequestDto(
 			1L,
 			"testFileName",
+			null,
 			null,
 			null,
 			null,
