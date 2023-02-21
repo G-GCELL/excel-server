@@ -1,5 +1,6 @@
 package com.gabia.weat.gcellexcelserver.file.writer;
 
+import com.gabia.weat.gcellexcelserver.converter.MessageMetaDtoConverter;
 import com.gabia.weat.gcellexcelserver.domain.type.MessageType;
 import com.gabia.weat.gcellexcelserver.dto.JdbcDto.ResultSetDto;
 import com.gabia.weat.gcellexcelserver.dto.MessageDto.FileCreateProgressMsgDto;
@@ -127,14 +128,8 @@ public class ExcelWriter {
     private void sendProgressRateMsg(MessageMetaDto dto, int rate) {
         fileCreateProgressProducer.sendMessage(
             MessageWrapperDto.wrapMessageDto(
-                FileCreateProgressMsgDto.builder()
-                    .memberId(dto.memberId())
-                    .messageType(MessageType.FILE_CREATION_PROGRESS)
-                    .memberFileName(dto.fileName())
-                    .progressRate(rate)
-                    .build(),
-                dto.traceId()
-            ));
+                MessageMetaDtoConverter.toFileCreateProgressMsgDto(dto, rate), dto.traceId())
+        );
     }
 
 }
