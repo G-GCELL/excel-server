@@ -55,6 +55,7 @@ public class ExcelWriter {
             sendProgressRateMsg(dto, 100);
             workbook.finish();
         } catch (Exception exception) {
+            file.delete();
             exception.printStackTrace();
         }
         return file;
