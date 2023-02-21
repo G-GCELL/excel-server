@@ -1,9 +1,11 @@
 package com.gabia.weat.gcellexcelserver.file.writer;
 
+import com.gabia.weat.gcellexcelserver.converter.MessageMetaDtoConverter;
 import com.gabia.weat.gcellexcelserver.domain.type.MessageType;
 import com.gabia.weat.gcellexcelserver.dto.JdbcDto.ResultSetDto;
 import com.gabia.weat.gcellexcelserver.dto.MessageDto.FileCreateProgressMsgDto;
-import com.gabia.weat.gcellexcelserver.dto.MsgMetaDto;
+import com.gabia.weat.gcellexcelserver.dto.MessageWrapperDto;
+import com.gabia.weat.gcellexcelserver.dto.MessageMetaDto;
 import com.gabia.weat.gcellexcelserver.service.producer.FileCreateProgressProducer;
 
 import org.dhatim.fastexcel.Workbook;
@@ -27,7 +29,7 @@ public class ExcelWriter {
     private final int FLUSH_UNIT = 100;
     private final FileCreateProgressProducer fileCreateProgressProducer;
 
-    public File writeWithProgress(ResultSetDto resultSetDto, String fileName, MsgMetaDto dto) {
+    public File writeWithProgress(ResultSetDto resultSetDto, String fileName, MessageMetaDto dto) {
         validateResult(resultSetDto);
         File file = new File(fileName);
         try (FileOutputStream fileOutputStream = new FileOutputStream(file);
@@ -124,13 +126,11 @@ public class ExcelWriter {
         }
     }
 
-    private void sendProgressRateMsg(MsgMetaDto dto, int rate) {
-        fileCreateProgressProducer.sendMessage(new FileCreateProgressMsgDto(
-            dto.memberId(),
-            MessageType.FILE_CREATION_PROGRESS,
-            dto.fileName(),
-            rate
-        ));
+    private void sendProgressRateMsg(MessageMetaDto dto, int rate) {
+        fileCreateProgressProducer.sendMessage(
+            MessageWrapperDto.wrapMessageDto(
+                MessageMetaDtoConverter.toFileCreateProgressMsgDto(dto, rate), dto.traceId())
+        );
     }
 
 }

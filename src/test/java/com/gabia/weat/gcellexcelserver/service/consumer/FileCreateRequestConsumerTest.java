@@ -12,13 +12,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import com.gabia.weat.gcellexcelserver.dto.FileDto.FileCreateRequestDto;
+import com.gabia.weat.gcellexcelserver.dto.MessageWrapperDto;
 import com.gabia.weat.gcellexcelserver.service.ExcelDataService;
 import com.rabbitmq.client.Channel;
 
-@SpringBootTest
 @ExtendWith(MockitoExtension.class)
 public class FileCreateRequestConsumerTest {
 
@@ -34,10 +33,15 @@ public class FileCreateRequestConsumerTest {
 	public void receiveMessage_test() throws IOException, SQLException {
 		// given
 		FileCreateRequestDto fileCreateRequestDto = this.getFileCreateRequestDto();
+		String traceId = "testid";
+		MessageWrapperDto<FileCreateRequestDto> messageWrapperDto = MessageWrapperDto.wrapMessageDto(
+			fileCreateRequestDto, traceId);
 		long tag = 0L;
 
 		// when & then
-		assertThatCode(() -> fileCreateRequestConsumer.receiveMessage(fileCreateRequestDto, channel, tag)).doesNotThrowAnyException();
+		assertThatCode(
+			() -> fileCreateRequestConsumer.receiveMessage(messageWrapperDto, channel, tag)).doesNotThrowAnyException();
+		verify(excelDataService, times(1)).createExcelFile(eq(messageWrapperDto));
 		verify(channel, times(1)).basicAck(eq(tag), anyBoolean());
 	}
 

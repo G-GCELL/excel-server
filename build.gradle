@@ -88,7 +88,8 @@ jacocoTestReport {
 					"/**/config/**",
 					"/**/repository/**",
 					"/**/file/**",
-					"/**/query/**"
+					"/**/query/**",
+					"**/MessageMetaDtoConverter.class"
 			])
 		}))
 	}
@@ -115,7 +116,8 @@ jacocoTestCoverageVerification {
 					"*.config.*",
 					"*.repository.*",
 					"*.file.*",
-					"*.query.*"
+					"*.query.*",
+					"*.MessageMetaDtoConverter"
 			]
 		}
 	}

@@ -5,6 +5,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import com.gabia.weat.gcellexcelserver.dto.MessageDto.FileCreateProgressMsgDto;
+import com.gabia.weat.gcellexcelserver.dto.MessageWrapperDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -14,9 +15,9 @@ public class FileCreateProgressProducer implements Producer<FileCreateProgressMs
 
 	private final RabbitTemplate rabbitTemplate;
 
-	public void sendMessage(FileCreateProgressMsgDto fileCreateProgressMsgDto) {
+	public void sendMessage(MessageWrapperDto<FileCreateProgressMsgDto> message) {
 		CorrelationData correlationData = new CorrelationData();
-		rabbitTemplate.correlationConvertAndSend(fileCreateProgressMsgDto, correlationData);
+		rabbitTemplate.correlationConvertAndSend(message, correlationData);
 	}
 
 }

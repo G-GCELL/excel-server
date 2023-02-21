@@ -3,11 +3,13 @@ package com.gabia.weat.gcellexcelserver.service;
 import java.io.File;
 import java.sql.SQLException;
 
-import com.gabia.weat.gcellexcelserver.domain.type.MessageType;
+import com.gabia.weat.gcellexcelserver.converter.FileDtoConverter;
+import com.gabia.weat.gcellexcelserver.converter.MessageMetaDtoConverter;
 import com.gabia.weat.gcellexcelserver.dto.JdbcDto.ResultSetDto;
-import com.gabia.weat.gcellexcelserver.dto.MessageDto.FileCreateProgressMsgDto;
-import com.gabia.weat.gcellexcelserver.dto.MsgMetaDto;
+import com.gabia.weat.gcellexcelserver.dto.MessageWrapperDto;
+import com.gabia.weat.gcellexcelserver.dto.MessageMetaDto;
 import com.gabia.weat.gcellexcelserver.file.writer.ExcelWriter;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -30,21 +32,20 @@ public class ExcelDataService {
 	private final ExcelWriter excelWriter;
 	private final FileCreateProgressProducer fileCreateProgressProducer;
 
-	public void createExcelFile(@Valid FileCreateRequestDto dto) throws SQLException {
+	public void createExcelFile(MessageWrapperDto<@Valid FileCreateRequestDto> messageWrapperDto) throws SQLException {
+		FileCreateRequestDto dto = messageWrapperDto.getMessage();
 		ResultSetDto result = excelDataJdbcRepository.getResultSet(dto);
-		MsgMetaDto msgMetaDto = new MsgMetaDto(dto.memberId(), dto.fileName());
-		File excelFile = excelWriter.writeWithProgress(result, Thread.currentThread().toString(), msgMetaDto);
+		MessageMetaDto messageMetaDto = FileDtoConverter.toMessageMetaDto(dto, messageWrapperDto.getTraceId());
+		File excelFile = excelWriter.writeWithProgress(result, Thread.currentThread().toString(), messageMetaDto);
 		minioService.uploadFileWithDelete(excelFile, dto.fileName());
-		sendCompletionMsg(msgMetaDto);
+		sendCompletionMsg(messageMetaDto);
 	}
 
-	private void sendCompletionMsg(MsgMetaDto dto) {
-		fileCreateProgressProducer.sendMessage(new FileCreateProgressMsgDto(
-			dto.memberId(),
-			MessageType.FILE_CREATION_COMPLETE,
-			dto.fileName(),
-			null
-		));
+	private void sendCompletionMsg(MessageMetaDto dto) {
+		fileCreateProgressProducer.sendMessage(
+			MessageWrapperDto.wrapMessageDto(
+				MessageMetaDtoConverter.toFileCreateProgressMsgDto(dto), dto.traceId())
+		);
 	}
 
 }
