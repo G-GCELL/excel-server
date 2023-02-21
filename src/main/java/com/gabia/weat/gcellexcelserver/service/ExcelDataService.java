@@ -9,6 +9,7 @@ import com.gabia.weat.gcellexcelserver.dto.MessageDto.FileCreateProgressMsgDto;
 import com.gabia.weat.gcellexcelserver.dto.MessageWrapperDto;
 import com.gabia.weat.gcellexcelserver.dto.MsgMetaDto;
 import com.gabia.weat.gcellexcelserver.file.writer.ExcelWriter;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -34,19 +35,27 @@ public class ExcelDataService {
 	public void createExcelFile(MessageWrapperDto<@Valid FileCreateRequestDto> messageWrapperDto) throws SQLException {
 		FileCreateRequestDto dto = messageWrapperDto.getMessage();
 		ResultSetDto result = excelDataJdbcRepository.getResultSet(dto);
-		MsgMetaDto msgMetaDto = new MsgMetaDto(dto.memberId(), dto.fileName());
+		MsgMetaDto msgMetaDto = MsgMetaDto.builder()
+			.fileName(dto.fileName())
+			.memberId(dto.memberId())
+			.traceId(messageWrapperDto.getTraceId())
+			.build();
 		File excelFile = excelWriter.writeWithProgress(result, Thread.currentThread().toString(), msgMetaDto);
 		minioService.uploadFileWithDelete(excelFile, dto.fileName());
 		sendCompletionMsg(msgMetaDto);
 	}
 
 	private void sendCompletionMsg(MsgMetaDto dto) {
-		fileCreateProgressProducer.sendMessage(new FileCreateProgressMsgDto(
-			dto.memberId(),
-			MessageType.FILE_CREATION_COMPLETE,
-			dto.fileName(),
-			null
-		));
+		fileCreateProgressProducer.sendMessage(
+			MessageWrapperDto.wrapMessageDto(
+				FileCreateProgressMsgDto.builder()
+					.memberId(dto.memberId())
+					.messageType(MessageType.FILE_CREATION_COMPLETE)
+					.memberFileName(dto.fileName())
+					.progressRate(null)
+					.build(),
+				dto.traceId()
+			));
 	}
 
 }
