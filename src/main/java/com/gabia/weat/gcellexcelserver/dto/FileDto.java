@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 public class FileDto {
@@ -15,6 +16,8 @@ public class FileDto {
 		Long memberId,
 		@NotBlank
 		String fileName,
+		@NotEmpty
+		String[] columnNames,
 		String[] inAccountId,
 		String[] notAccountId,
 		String[] inProductCode,

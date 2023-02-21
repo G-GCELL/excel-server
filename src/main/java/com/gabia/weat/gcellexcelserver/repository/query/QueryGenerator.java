@@ -9,4 +9,5 @@ public interface QueryGenerator {
 
     QuerySetDto generateCountQuery(FileCreateRequestDto dto);
 
+	String generateSingleResultQuery();
 }
