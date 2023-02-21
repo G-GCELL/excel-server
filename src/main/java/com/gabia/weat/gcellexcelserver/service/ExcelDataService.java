@@ -32,7 +32,7 @@ public class ExcelDataService {
 	private final ExcelWriter excelWriter;
 	private final FileCreateProgressProducer fileCreateProgressProducer;
 
-	public void createExcelFile(MessageWrapperDto<@Valid FileCreateRequestDto> messageWrapperDto) throws SQLException {
+	public void createExcelFile(@Valid MessageWrapperDto<FileCreateRequestDto> messageWrapperDto) throws SQLException {
 		FileCreateRequestDto dto = messageWrapperDto.getMessage();
 		ResultSetDto result = excelDataJdbcRepository.getResultSet(dto);
 		MessageMetaDto messageMetaDto = FileDtoConverter.toMessageMetaDto(dto, messageWrapperDto.getTraceId());
