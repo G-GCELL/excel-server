@@ -9,6 +9,7 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Service;
 
 import com.gabia.weat.gcellexcelserver.dto.FileDto.FileCreateRequestDto;
+import com.gabia.weat.gcellexcelserver.dto.MessageWrapperDto;
 import com.gabia.weat.gcellexcelserver.service.ExcelDataService;
 import com.rabbitmq.client.Channel;
 
@@ -24,12 +25,17 @@ public class FileCreateRequestConsumer implements Consumer<FileCreateRequestDto>
 
 	@Override
 	@RabbitListener(queues = "${rabbitmq.queue.file-create-request-queue}", containerFactory = "fileCreateRequestListenerFactory")
-	public void receiveMessage(FileCreateRequestDto fileCreateRequestDto, Channel channel,
+	public void receiveMessage(MessageWrapperDto<FileCreateRequestDto> message, Channel channel,
 		@Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException, SQLException {
 
-		log.info(String.valueOf(fileCreateRequestDto));
-		excelDataService.createExcelFile(fileCreateRequestDto);
+		log.info(String.valueOf(message));
+		getFileCreateRequestMessage(message);
 		channel.basicAck(tag, false);
+	}
+
+	private void getFileCreateRequestMessage(MessageWrapperDto<FileCreateRequestDto> messageWrapperDto) throws
+		SQLException {
+		excelDataService.createExcelFile(messageWrapperDto);
 	}
 
 }
