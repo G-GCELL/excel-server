@@ -14,6 +14,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import com.gabia.weat.gcellexcelserver.domain.type.MessageType;
 import com.gabia.weat.gcellexcelserver.dto.MessageDto.FileCreateProgressMsgDto;
+import com.gabia.weat.gcellexcelserver.dto.MessageWrapperDto;
 
 @ExtendWith(MockitoExtension.class)
 public class FileCreateProgressProducerTest {
@@ -28,10 +29,12 @@ public class FileCreateProgressProducerTest {
 	public void sendMessage_test() {
 		// given
 		FileCreateProgressMsgDto fileCreateProgressMsgDto = this.getCreateProgressMsgDto();
+		String traceId = "testid";
+		MessageWrapperDto<FileCreateProgressMsgDto> messageWrapperDto = MessageWrapperDto.wrapMessageDto(fileCreateProgressMsgDto, traceId);
 
 		// when & then
-		assertThatCode(() -> fileCreateProgressProducer.sendMessage(fileCreateProgressMsgDto)).doesNotThrowAnyException();
-		verify(rabbitTemplate, times(1)).correlationConvertAndSend(eq(fileCreateProgressMsgDto), any(CorrelationData.class));
+		assertThatCode(() -> fileCreateProgressProducer.sendMessage(messageWrapperDto)).doesNotThrowAnyException();
+		verify(rabbitTemplate, times(1)).correlationConvertAndSend(eq(messageWrapperDto), any(CorrelationData.class));
 	}
 
 	private FileCreateProgressMsgDto getCreateProgressMsgDto() {
