@@ -25,6 +25,7 @@ class StringQueryGeneratorTest {
 		return new FileCreateRequestDto(
 			2L,
 			"hello.xlsx",
+			new String[] {"account_id"},
 			new String[] {"123456", "789123"},
 			null,
 			null,

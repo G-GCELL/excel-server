@@ -5,9 +5,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -60,6 +62,7 @@ public class ExcelDataJdbcRepository {
 
 	public ResultSetDto getResultSet(FileCreateRequestDto dto) throws SQLException {
 		Connection conn = getConnection();
+		validateColumnNames(dto.columnNames(), conn);
 
 		QuerySetDto querySet = queryGenerator.generateCountQuery(dto);
 		PreparedStatement statement = conn.prepareStatement(querySet.sql());
@@ -87,6 +90,18 @@ public class ExcelDataJdbcRepository {
 			properties.getPassword());
 	}
 
+	private void validateColumnNames(String[] columnNames, Connection conn) throws SQLException {
+		PreparedStatement statement = conn.prepareStatement(queryGenerator.generateSingleResultQuery());
+		ResultSet resultSet = statement.executeQuery();
+		List<String> columnList = getColumnNames(resultSet.getMetaData());
+		for (String columnName : columnNames) {
+			if (!columnList.contains(columnName)) {
+				throw new RuntimeException();
+				//TODO: Exception 처리
+			}
+		}
+	}
+
 	private void bindParam(PreparedStatement statement, Entry<Integer, Object> entry) throws SQLException {
 		switch (entry.getValue().getClass().getSimpleName()) {
 			case "String" -> statement.setString(entry.getKey(), (String)entry.getValue());
@@ -96,6 +111,15 @@ public class ExcelDataJdbcRepository {
 			);
 			case "BigDecimal" -> statement.setBigDecimal(entry.getKey(), (BigDecimal)entry.getValue());
 		}
+	}
+
+	private List<String> getColumnNames(ResultSetMetaData metaData) throws SQLException {
+		int columnCount = metaData.getColumnCount();
+		List<String> columnNames = new ArrayList<>(columnCount);
+		for (int i = 1; i <= columnCount; i++) {
+			columnNames.add(metaData.getColumnName(i));
+		}
+		return columnNames;
 	}
 
 }

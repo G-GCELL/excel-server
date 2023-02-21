@@ -15,6 +15,23 @@ public class StringQueryGenerator implements QueryGenerator {
 
     @Override
     public QuerySetDto generateQuery(FileCreateRequestDto dto) {
+        StringBuilder stringBuilder = new StringBuilder("select ");
+        for (String columnName : dto.columnNames()) {
+            stringBuilder.append(columnName).append(", ");
+        }
+        stringBuilder.deleteCharAt(stringBuilder.length() - 2);
+        stringBuilder.append("from excel_data");
+        QuerySetDto setDto = getWhereSentence(dto);
+        return new QuerySetDto(stringBuilder.append(setDto.sql()).toString(), setDto.params());
+    }
+
+    @Override
+    public QuerySetDto generateCountQuery(FileCreateRequestDto dto) {
+        QuerySetDto setDto = getWhereSentence(dto);
+        return new QuerySetDto("select count(*) from excel_data" + setDto.sql(), setDto.params());
+    }
+
+    private QuerySetDto getWhereSentence(FileCreateRequestDto dto) {
         StringBuilder stringBuilder;
         List<String> conditions = new ArrayList<>();
         Map<Integer, Object> paramMap = new HashMap<>();
@@ -78,22 +95,20 @@ public class StringQueryGenerator implements QueryGenerator {
             paramMap.put(++paramOrder, dto.costMax());
         }
 
-        String sql = "select * from excel_data";
+        stringBuilder = new StringBuilder();
         if (conditions.size() > 0) {
-            stringBuilder = new StringBuilder(sql);
             stringBuilder.append(" where ");
             for (String condition : conditions) {
                 stringBuilder.append(condition).append(" and ");
             }
-            sql = stringBuilder.substring(0, stringBuilder.length() - 5);
+            stringBuilder.delete(stringBuilder.length() - 5, stringBuilder.length());
         }
-        return new QuerySetDto(sql, paramMap);
+        return new QuerySetDto(stringBuilder.toString(), paramMap);
     }
 
     @Override
-    public QuerySetDto generateCountQuery(FileCreateRequestDto dto) {
-        QuerySetDto querySet = generateQuery(dto);
-        return new QuerySetDto(querySet.sql().replace("*", "count(*)"), querySet.params());
+    public String generateSingleResultQuery() {
+        return "select * from excel_data limit 1";
     }
 
 }
