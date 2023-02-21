@@ -67,7 +67,7 @@ public class CsvParser {
 	}
 
 	private File copyOriginCsv(String csvFilePath) {
-		String destPath = getDayDirectory() + "/" + csvFilePath;
+		String destPath = getDayDirectory() + File.separator + csvFilePath;
 		File srcFile = new File(csvFilePath);
 		File destFile = new File(destPath);
 		try {
