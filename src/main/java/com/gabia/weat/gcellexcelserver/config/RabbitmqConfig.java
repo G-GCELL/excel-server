@@ -82,6 +82,8 @@ public class RabbitmqConfig {
 		SimpleRabbitListenerContainerFactory listenerContainerFactory = new SimpleRabbitListenerContainerFactory();
 		listenerContainerFactory.setConnectionFactory(connectionFactory());
 		listenerContainerFactory.setMessageConverter(messageConverter());
+		listenerContainerFactory.setContainerCustomizer(
+			container -> container.setQueueNames(property.getQueue().getFileCreateRequestQueue()));
 		listenerContainerFactory.setConcurrentConsumers(property.getListener().getConcurrency());
 		listenerContainerFactory.setMaxConcurrentConsumers(property.getListener().getMaxConcurrency());
 		listenerContainerFactory.setPrefetchCount(property.getListener().getPrefetch());

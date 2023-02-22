@@ -24,7 +24,7 @@ public class FileCreateRequestConsumer implements Consumer<FileCreateRequestDto>
 	private final ExcelDataService excelDataService;
 
 	@Override
-	@RabbitListener(queues = "${rabbitmq.queue.file-create-request-queue}", containerFactory = "fileCreateRequestListenerFactory")
+	@RabbitListener(containerFactory = "fileCreateRequestListenerFactory")
 	public void receiveMessage(MessageWrapperDto<FileCreateRequestDto> message, Channel channel,
 		@Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException, SQLException {
 
