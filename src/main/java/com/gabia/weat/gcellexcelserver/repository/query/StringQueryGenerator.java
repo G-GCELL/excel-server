@@ -37,7 +37,10 @@ public class StringQueryGenerator implements QueryGenerator {
         Map<Integer, Object> paramMap = new HashMap<>();
         int paramOrder = 0;
 
-        if (dto.inAccountId() != null) {
+        if (dto.inAccountId() != null && dto.inAccountId().size() > 0) {
+            if (dto.inAccountId().size() <= 1) {
+                dto.inAccountId().add("");
+            }
             stringBuilder = new StringBuilder("account_id in (");
             for (String accountId : dto.inAccountId()) {
                 paramMap.put(++paramOrder, accountId);
@@ -47,7 +50,7 @@ public class StringQueryGenerator implements QueryGenerator {
             conditions.add(stringBuilder.append(")").toString());
         }
 
-        if (dto.notAccountId() != null) {
+        if (dto.notAccountId() != null && dto.notAccountId().size() > 0) {
             stringBuilder = new StringBuilder("account_id not in (");
             for (String accountId : dto.notAccountId()) {
                 paramMap.put(++paramOrder, accountId);
@@ -57,7 +60,7 @@ public class StringQueryGenerator implements QueryGenerator {
             conditions.add(stringBuilder.append(")").toString());
         }
 
-        if (dto.inProductCode() != null) {
+        if (dto.inProductCode() != null && dto.inProductCode().size() > 0) {
             stringBuilder = new StringBuilder("product_code in (");
             for (String productCode : dto.inProductCode()) {
                 paramMap.put(++paramOrder, productCode);
@@ -67,7 +70,7 @@ public class StringQueryGenerator implements QueryGenerator {
             conditions.add(stringBuilder.append(")").toString());
         }
 
-        if (dto.notProductCode() != null) {
+        if (dto.notProductCode() != null && dto.notProductCode().size() > 0) {
             stringBuilder = new StringBuilder("product_code not in (");
             for (String productCode : dto.notProductCode()) {
                 paramMap.put(++paramOrder, productCode);

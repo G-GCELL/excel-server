@@ -3,6 +3,7 @@ package com.gabia.weat.gcellexcelserver.repository.query;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,11 +26,11 @@ class StringQueryGeneratorTest {
 		return new FileCreateRequestDto(
 			2L,
 			"hello.xlsx",
-			new String[] {"account_id"},
-			new String[] {"123456", "789123"},
+			List.of("account_id"),
+			List.of("123456", "789123"),
 			null,
 			null,
-			new String[] {"Amazon S3"},
+			List.of("amazonS3"),
 			LocalDateTime.of(2022, 1, 1, 0, 0, 0),
 			LocalDateTime.of(2022, 12, 31, 0, 0, 0),
 			LocalDateTime.of(2022, 1, 1, 0, 0, 0),

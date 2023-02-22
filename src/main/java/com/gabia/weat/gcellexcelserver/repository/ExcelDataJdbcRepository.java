@@ -90,7 +90,7 @@ public class ExcelDataJdbcRepository {
 			properties.getPassword());
 	}
 
-	private void validateColumnNames(String[] columnNames, Connection conn) throws SQLException {
+	private void validateColumnNames(List<String> columnNames, Connection conn) throws SQLException {
 		PreparedStatement statement = conn.prepareStatement(queryGenerator.generateSingleResultQuery());
 		ResultSet resultSet = statement.executeQuery();
 		List<String> columnList = getColumnNames(resultSet.getMetaData());
