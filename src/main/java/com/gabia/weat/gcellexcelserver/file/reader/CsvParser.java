@@ -6,13 +6,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
-import java.nio.file.Files;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import javax.sql.DataSource;
 
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import com.gabia.weat.gcellexcelserver.domain.ExcelData;
+import com.gabia.weat.gcellexcelserver.error.ErrorCode;
 import com.gabia.weat.gcellexcelserver.repository.ExcelDataJdbcRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -35,7 +37,7 @@ public class CsvParser {
 	private final String[] HEADERS_ORDER_RULE = {"account_id", "usage_date", "product_code", "cost"};
 	private final DataSource dataSource;
 
-	public void insertWithCsv(String csvFilePath) {
+	public void insertWithCsv(String csvFilePath) throws SQLException, IOException {
 		File copied = copyOriginCsv(csvFilePath);
 		TransactionSynchronizationManager.initSynchronization();
 		Connection connection = DataSourceUtils.getConnection(dataSource);
@@ -57,8 +59,6 @@ public class CsvParser {
 			}
 			excelDataJdbcRepository.insertExcelDataList(excelDataList);
 			connection.commit();
-		} catch (Exception e) {
-			e.printStackTrace();
 		} finally {
 			DataSourceUtils.releaseConnection(connection, dataSource);
 			TransactionSynchronizationManager.unbindResource(dataSource);
@@ -66,15 +66,11 @@ public class CsvParser {
 		}
 	}
 
-	private File copyOriginCsv(String csvFilePath) {
+	private File copyOriginCsv(String csvFilePath) throws IOException {
 		String destPath = getDayDirectory() + File.separator + csvFilePath;
 		File srcFile = new File(csvFilePath);
 		File destFile = new File(destPath);
-		try {
-			FileUtils.copyFile(srcFile, destFile);
-		} catch (IOException exception) {
-			exception.printStackTrace();
-		}
+		FileUtils.copyFile(srcFile, destFile);
 		return destFile;
 	}
 
@@ -91,12 +87,15 @@ public class CsvParser {
 
 	private void validateHeader(String headerLine) {
 		if (!Arrays.equals(headerLine.split(","), HEADERS_ORDER_RULE)) {
-			//TODO: Global Exception 처리
+			throw new IllegalArgumentException(ErrorCode.INVALID_CSV_HEADER.getMessage());
 		}
 	}
 
 	private ExcelData parseLine(String line) {
 		String[] dataFragments = line.split(",|/");
+		if (dataFragments.length != HEADERS_ORDER_RULE.length + 1) {
+			throw new IllegalArgumentException(ErrorCode.INVALID_CSV_FORMAT.getMessage());
+		}
 		return ExcelData.createWithoutId(
 			dataFragments[0],
 			LocalDateTime.parse(dataFragments[1]),
