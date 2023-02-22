@@ -1,3 +1,6 @@
+server:
+  name: name
+
 spring:
   jpa:
     show-sql: true
@@ -7,9 +10,6 @@ spring:
       hibernate:
         format_sql: true
         default_batch_fetch_size: 100
-
-  application:
-    name: name
 
 minio:
   bucket:
@@ -28,6 +28,7 @@ rabbitmq:
     file-create-progress-exchange: exchange
   queue:
     file-create-request-queue: queue
+    file-create-progress-queue: queue
   listener:
     concurrency: 3
     max-concurrency: 10
