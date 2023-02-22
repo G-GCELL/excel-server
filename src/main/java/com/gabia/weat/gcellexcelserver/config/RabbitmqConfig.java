@@ -3,11 +3,16 @@ package com.gabia.weat.gcellexcelserver.config;
 import java.util.Objects;
 
 import org.springframework.amqp.core.AcknowledgeMode;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.Declarables;
+import org.springframework.amqp.core.FanoutExchange;
+import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionNameStrategy;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
@@ -27,8 +32,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class RabbitmqConfig {
 
-	@Value("${spring.application.name}")
-	private String applicationName;
+	@Value("${server.name}")
+	private String serverName;
 	private final RabbitmqProperty property;
 
 	@Bean
@@ -46,7 +51,30 @@ public class RabbitmqConfig {
 
 	@Bean
 	ConnectionNameStrategy connectionNameStrategy() {
-		return connectionFactory -> applicationName;
+		return connectionFactory -> serverName;
+	}
+
+	@Bean
+	RabbitAdmin rabbitAdmin() {
+		return new RabbitAdmin(connectionFactory());
+	}
+
+	@Bean
+	Queue fileCreateProgressQueue() {
+		return new Queue(property.getQueue().getFileCreateProgressQueue(serverName), true);
+	}
+
+	@Bean
+	FanoutExchange fileCreateProgressExchange() {
+		return new FanoutExchange(property.getExchange().getFileCreateProgressExchange(), true, false);
+	}
+
+	@Bean
+	Declarables fileCreateProgressBindings() {
+		return new Declarables(
+			BindingBuilder.bind(fileCreateProgressQueue()).
+				to(fileCreateProgressExchange())
+		);
 	}
 
 	@Bean
