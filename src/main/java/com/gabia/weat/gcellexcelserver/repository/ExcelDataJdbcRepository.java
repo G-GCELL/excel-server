@@ -15,6 +15,8 @@ import java.util.Map.Entry;
 
 import com.gabia.weat.gcellexcelserver.dto.JdbcDto.QuerySetDto;
 import com.gabia.weat.gcellexcelserver.dto.JdbcDto.ResultSetDto;
+import com.gabia.weat.gcellexcelserver.error.ErrorCode;
+import com.gabia.weat.gcellexcelserver.error.exception.CustomException;
 import com.gabia.weat.gcellexcelserver.repository.query.QueryGenerator;
 
 import org.jetbrains.annotations.NotNull;
@@ -96,8 +98,7 @@ public class ExcelDataJdbcRepository {
 		List<String> columnList = getColumnNames(resultSet.getMetaData());
 		for (String columnName : columnNames) {
 			if (!columnList.contains(columnName)) {
-				throw new RuntimeException();
-				//TODO: Exception 처리
+				throw new CustomException(ErrorCode.INVALID_COLUMN_NAME);
 			}
 		}
 	}

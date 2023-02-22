@@ -1,11 +1,11 @@
 package com.gabia.weat.gcellexcelserver.file.writer;
 
 import com.gabia.weat.gcellexcelserver.converter.MessageMetaDtoConverter;
-import com.gabia.weat.gcellexcelserver.domain.type.MessageType;
 import com.gabia.weat.gcellexcelserver.dto.JdbcDto.ResultSetDto;
-import com.gabia.weat.gcellexcelserver.dto.MessageDto.FileCreateProgressMsgDto;
 import com.gabia.weat.gcellexcelserver.dto.MessageWrapperDto;
 import com.gabia.weat.gcellexcelserver.dto.MessageMetaDto;
+import com.gabia.weat.gcellexcelserver.error.ErrorCode;
+import com.gabia.weat.gcellexcelserver.error.exception.CustomException;
 import com.gabia.weat.gcellexcelserver.service.producer.FileCreateProgressProducer;
 
 import org.dhatim.fastexcel.Workbook;
@@ -58,7 +58,7 @@ public class ExcelWriter {
             workbook.finish();
         } catch (Exception exception) {
             file.delete();
-            exception.printStackTrace();
+            throw new CustomException(exception, ErrorCode.EXCEL_WRITE_FAIL);
         }
         return file;
     }
@@ -84,8 +84,7 @@ public class ExcelWriter {
     private void validateResult(ResultSetDto resultSetDto) {
         Integer resultCount = resultSetDto.resultSetCount();
         if (resultCount == null || resultCount <= 0) {
-            // TODO: Global Exception 처리
-            throw new RuntimeException();
+            throw new CustomException(ErrorCode.NO_RESULT);
         }
     }
 
@@ -110,7 +109,7 @@ public class ExcelWriter {
     }
 
     private void writeExcelRow(Worksheet worksheet, int rowCount, ResultSet resultSet,
-                                      int[] columnTypes) throws SQLException, IOException {
+        int[] columnTypes) throws SQLException, IOException {
         int currentRow = rowCount % MAX_ROWS;
         currentRow = currentRow == 0 ? currentRow + 1 : currentRow;
         for (int i = 0; i < columnTypes.length; i++) {

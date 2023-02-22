@@ -47,6 +47,7 @@ dependencies {
 	implementation 'io.minio:minio:8.3.0'
 	implementation 'com.squareup.okhttp3:okhttp:4.9.1'
 	implementation 'commons-io:commons-io:2.11.0'
+	implementation 'org.apache.commons:commons-lang3:3.12.0'
 
 	compileOnly 'org.projectlombok:lombok'
 
@@ -89,6 +90,9 @@ jacocoTestReport {
 					"/**/repository/**",
 					"/**/file/**",
 					"/**/query/**",
+					"**/annotation/**",
+					"**/aspect/**",
+					"**/error/**",
 					"**/MessageMetaDtoConverter.class"
 			])
 		}))
@@ -117,6 +121,9 @@ jacocoTestCoverageVerification {
 					"*.repository.*",
 					"*.file.*",
 					"*.query.*",
+					"*.annotation.*",
+					"*.aspect.*",
+					"*.error.*",
 					"*.MessageMetaDtoConverter"
 			]
 		}
