@@ -5,13 +5,9 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
-import com.gabia.weat.gcellexcelserver.dto.FileDto.FileCreateRequestDto;
-import com.gabia.weat.gcellexcelserver.repository.ExcelDataJdbcRepository;
+import com.gabia.weat.gcellexcelserver.dto.MessageDto.FileCreateRequestMsgDto;
 
 class StringQueryGeneratorTest {
 
@@ -22,8 +18,8 @@ class StringQueryGeneratorTest {
 		stringQueryGenerator.generateCountQuery(getDto());
 	}
 
-	private FileCreateRequestDto getDto() {
-		return new FileCreateRequestDto(
+	private FileCreateRequestMsgDto getDto() {
+		return new FileCreateRequestMsgDto(
 			2L,
 			"hello.xlsx",
 			List.of("account_id"),

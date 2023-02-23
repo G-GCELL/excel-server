@@ -15,6 +15,7 @@ import java.util.Map.Entry;
 
 import com.gabia.weat.gcellexcelserver.dto.JdbcDto.QuerySetDto;
 import com.gabia.weat.gcellexcelserver.dto.JdbcDto.ResultSetDto;
+import com.gabia.weat.gcellexcelserver.dto.MessageDto.FileCreateRequestMsgDto;
 import com.gabia.weat.gcellexcelserver.error.ErrorCode;
 import com.gabia.weat.gcellexcelserver.error.exception.CustomException;
 import com.gabia.weat.gcellexcelserver.repository.query.QueryGenerator;
@@ -26,7 +27,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.gabia.weat.gcellexcelserver.domain.ExcelData;
-import com.gabia.weat.gcellexcelserver.dto.FileDto.FileCreateRequestDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -62,7 +62,7 @@ public class ExcelDataJdbcRepository {
 			});
 	}
 
-	public ResultSetDto getResultSet(FileCreateRequestDto dto) throws SQLException {
+	public ResultSetDto getResultSet(FileCreateRequestMsgDto dto) throws SQLException {
 		Connection conn = getConnection();
 		validateColumnNames(dto.columnNames(), conn);
 

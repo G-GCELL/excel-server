@@ -2,8 +2,8 @@ package com.gabia.weat.gcellexcelserver.service;
 
 import static org.mockito.BDDMockito.*;
 
-import com.gabia.weat.gcellexcelserver.dto.FileDto.FileCreateRequestDto;
 import com.gabia.weat.gcellexcelserver.dto.JdbcDto.ResultSetDto;
+import com.gabia.weat.gcellexcelserver.dto.MessageDto.FileCreateRequestMsgDto;
 import com.gabia.weat.gcellexcelserver.dto.MessageWrapperDto;
 import com.gabia.weat.gcellexcelserver.file.writer.ExcelWriter;
 import com.gabia.weat.gcellexcelserver.repository.ExcelDataJdbcRepository;
@@ -38,7 +38,7 @@ class ExcelDataServiceTest {
 		// Given
 		ResultSetDto resultSetDto = new ResultSetDto(null, 10);
 		String traceId = "testid";
-		MessageWrapperDto<FileCreateRequestDto> messageWrapperDto = MessageWrapperDto.wrapMessageDto(
+		MessageWrapperDto<FileCreateRequestMsgDto> messageWrapperDto = MessageWrapperDto.wrapMessageDto(
 			getFileCreateRequestDto(), traceId);
 		given(excelDataJdbcRepository.getResultSet(getFileCreateRequestDto())).willReturn(resultSetDto);
 
@@ -50,8 +50,8 @@ class ExcelDataServiceTest {
 		verify(excelWriter, times(1)).writeWithProgress(any(), any(), any());
 	}
 
-	private FileCreateRequestDto getFileCreateRequestDto() {
-		return new FileCreateRequestDto(
+	private FileCreateRequestMsgDto getFileCreateRequestDto() {
+		return new FileCreateRequestMsgDto(
 			1L,
 			"testFileName",
 			null,
