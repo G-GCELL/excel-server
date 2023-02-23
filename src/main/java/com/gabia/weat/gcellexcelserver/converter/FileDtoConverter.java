@@ -1,6 +1,5 @@
 package com.gabia.weat.gcellexcelserver.converter;
 
-import com.gabia.weat.gcellexcelserver.dto.FileDto.FileCreateRequestDto;
 import com.gabia.weat.gcellexcelserver.dto.MessageMetaDto;
 
 public class FileDtoConverter {

@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.gabia.weat.gcellexcelserver.dto.FileDto.FileCreateRequestDto;
 import com.gabia.weat.gcellexcelserver.dto.JdbcDto.QuerySetDto;
 
 import org.springframework.stereotype.Component;

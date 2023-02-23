@@ -26,7 +26,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.gabia.weat.gcellexcelserver.domain.ExcelData;
-import com.gabia.weat.gcellexcelserver.dto.FileDto.FileCreateRequestDto;
 
 import lombok.RequiredArgsConstructor;
 
