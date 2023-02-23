@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.gabia.weat.gcellexcelserver.dto.MessageDto.FileCreateRequestMsgDto;
 import com.gabia.weat.gcellexcelserver.dto.MessageWrapperDto;
 import com.gabia.weat.gcellexcelserver.service.ExcelDataService;
 import com.rabbitmq.client.Channel;
@@ -31,10 +32,10 @@ public class FileCreateRequestConsumerTest {
 	@DisplayName("엑셀_생성_요청_메시지_소비_테스트")
 	public void receiveMessage_test() throws IOException, SQLException {
 		// given
-		FileCreateRequestDto fileCreateRequestDto = this.getFileCreateRequestDto();
+		FileCreateRequestMsgDto fileCreateRequestMsgDto = this.getFileCreateRequestDto();
 		String traceId = "testid";
-		MessageWrapperDto<FileCreateRequestDto> messageWrapperDto = MessageWrapperDto.wrapMessageDto(
-			fileCreateRequestDto, traceId);
+		MessageWrapperDto<FileCreateRequestMsgDto> messageWrapperDto = MessageWrapperDto.wrapMessageDto(
+			fileCreateRequestMsgDto, traceId);
 		long tag = 0L;
 
 		// when & then
@@ -44,8 +45,8 @@ public class FileCreateRequestConsumerTest {
 		verify(channel, times(1)).basicAck(eq(tag), anyBoolean());
 	}
 
-	private FileCreateRequestDto getFileCreateRequestDto() {
-		return new FileCreateRequestDto(
+	private FileCreateRequestMsgDto getFileCreateRequestDto() {
+		return new FileCreateRequestMsgDto(
 			1L,
 			"testFileName",
 			null,

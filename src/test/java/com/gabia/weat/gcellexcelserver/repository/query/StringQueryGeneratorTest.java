@@ -7,6 +7,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import com.gabia.weat.gcellexcelserver.dto.MessageDto.FileCreateRequestMsgDto;
+
 class StringQueryGeneratorTest {
 
 	private StringQueryGenerator stringQueryGenerator = new StringQueryGenerator();
@@ -16,8 +18,8 @@ class StringQueryGeneratorTest {
 		stringQueryGenerator.generateCountQuery(getDto());
 	}
 
-	private FileCreateRequestDto getDto() {
-		return new FileCreateRequestDto(
+	private FileCreateRequestMsgDto getDto() {
+		return new FileCreateRequestMsgDto(
 			2L,
 			"hello.xlsx",
 			List.of("account_id"),
