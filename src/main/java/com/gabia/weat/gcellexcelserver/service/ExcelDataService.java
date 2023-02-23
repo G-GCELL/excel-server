@@ -3,7 +3,7 @@ package com.gabia.weat.gcellexcelserver.service;
 import java.io.File;
 import java.sql.SQLException;
 
-import com.gabia.weat.gcellexcelserver.converter.FileDtoConverter;
+import com.gabia.weat.gcellexcelserver.converter.MessageDtoConverter;
 import com.gabia.weat.gcellexcelserver.converter.MessageMetaDtoConverter;
 import com.gabia.weat.gcellexcelserver.dto.JdbcDto.ResultSetDto;
 import com.gabia.weat.gcellexcelserver.dto.MessageWrapperDto;
@@ -34,7 +34,7 @@ public class ExcelDataService {
 	public void createExcelFile(@Valid MessageWrapperDto<FileCreateRequestDto> messageWrapperDto) throws SQLException {
 		FileCreateRequestDto dto = messageWrapperDto.getMessage();
 		ResultSetDto result = excelDataJdbcRepository.getResultSet(dto);
-		MessageMetaDto messageMetaDto = FileDtoConverter.toMessageMetaDto(dto, messageWrapperDto.getTraceId());
+		MessageMetaDto messageMetaDto = MessageDtoConverter.toMessageMetaDto(dto, messageWrapperDto.getTraceId());
 		File excelFile = excelWriter.writeWithProgress(result, Thread.currentThread().toString(), messageMetaDto);
 		minioService.uploadFileWithDelete(excelFile, dto.fileName());
 		sendCompletionMsg(messageMetaDto);
