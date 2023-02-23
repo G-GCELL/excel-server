@@ -9,6 +9,7 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Service;
 
 import com.gabia.weat.gcellexcelserver.annotation.ConsumerLog;
+import com.gabia.weat.gcellexcelserver.dto.MessageDto.FileCreateRequestMsgDto;
 import com.gabia.weat.gcellexcelserver.dto.MessageWrapperDto;
 import com.gabia.weat.gcellexcelserver.service.ExcelDataService;
 import com.rabbitmq.client.Channel;
@@ -19,20 +20,20 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class FileCreateRequestConsumer implements Consumer<FileCreateRequestDto> {
+public class FileCreateRequestConsumer implements Consumer<FileCreateRequestMsgDto> {
 
 	private final ExcelDataService excelDataService;
 
 	@Override
 	@ConsumerLog(queue = "${rabbitmq.queue.file-create-request-queue}")
 	@RabbitListener(containerFactory = "fileCreateRequestListenerFactory")
-	public void receiveMessage(MessageWrapperDto<FileCreateRequestDto> message, Channel channel,
+	public void receiveMessage(MessageWrapperDto<FileCreateRequestMsgDto> message, Channel channel,
 		@Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException, SQLException {
 		getFileCreateRequestMessage(message);
 		channel.basicAck(tag, false);
 	}
 
-	private void getFileCreateRequestMessage(MessageWrapperDto<FileCreateRequestDto> messageWrapperDto) throws
+	private void getFileCreateRequestMessage(MessageWrapperDto<FileCreateRequestMsgDto> messageWrapperDto) throws
 		SQLException {
 		excelDataService.createExcelFile(messageWrapperDto);
 	}

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.gabia.weat.gcellexcelserver.dto.JdbcDto.QuerySetDto;
+import com.gabia.weat.gcellexcelserver.dto.MessageDto.FileCreateRequestMsgDto;
 
 import org.springframework.stereotype.Component;
 
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class StringQueryGenerator implements QueryGenerator {
 
     @Override
-    public QuerySetDto generateQuery(FileCreateRequestDto dto) {
+    public QuerySetDto generateQuery(FileCreateRequestMsgDto dto) {
         StringBuilder stringBuilder = new StringBuilder("select ");
         for (String columnName : dto.columnNames()) {
             stringBuilder.append(columnName).append(", ");
@@ -25,12 +26,12 @@ public class StringQueryGenerator implements QueryGenerator {
     }
 
     @Override
-    public QuerySetDto generateCountQuery(FileCreateRequestDto dto) {
+    public QuerySetDto generateCountQuery(FileCreateRequestMsgDto dto) {
         QuerySetDto setDto = getWhereSentence(dto);
         return new QuerySetDto("select count(*) from excel_data" + setDto.sql(), setDto.params());
     }
 
-    private QuerySetDto getWhereSentence(FileCreateRequestDto dto) {
+    private QuerySetDto getWhereSentence(FileCreateRequestMsgDto dto) {
         StringBuilder stringBuilder;
         List<String> conditions = new ArrayList<>();
         Map<Integer, Object> paramMap = new HashMap<>();
