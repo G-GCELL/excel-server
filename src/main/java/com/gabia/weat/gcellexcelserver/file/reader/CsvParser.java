@@ -9,11 +9,11 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import javax.sql.DataSource;
 
@@ -37,13 +37,17 @@ public class CsvParser {
 	private final String[] HEADERS_ORDER_RULE = {"account_id", "usage_date", "product_code", "cost"};
 	private final DataSource dataSource;
 
-	public void insertWithCsv(String csvFilePath) throws SQLException, IOException {
+	public void insertWithCsv(String csvFilePath, YearMonth deleteTarget)
+		throws SQLException, IOException {
 		File copied = copyOriginCsv(csvFilePath);
 		TransactionSynchronizationManager.initSynchronization();
 		Connection connection = DataSourceUtils.getConnection(dataSource);
 
 		try (FileInputStream fileInputStream = new FileInputStream(copied)) {
 			connection.setAutoCommit(false);
+
+			excelDataJdbcRepository.deleteWithYearMonth(deleteTarget);
+
 			InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8");
 			BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 			skipHeader(bufferedReader);
@@ -67,15 +71,17 @@ public class CsvParser {
 	}
 
 	private File copyOriginCsv(String csvFilePath) throws IOException {
-		String destPath = getDayDirectory() + File.separator + csvFilePath;
+		LocalDateTime now = LocalDateTime.now();
 		File srcFile = new File(csvFilePath);
-		File destFile = new File(destPath);
+		File destFile = new File(
+			now.format(DateTimeFormatter.ofPattern("yyyy/M"))
+				+ File.separator
+				+ now.getDayOfMonth()
+				+ "_"
+				+ new File(csvFilePath).getName()
+		);
 		FileUtils.copyFile(srcFile, destFile);
 		return destFile;
-	}
-
-	private String getDayDirectory() {
-		return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/M/d"));
 	}
 
 	private void skipHeader(BufferedReader bufferedReader) throws IOException {
@@ -98,11 +104,18 @@ public class CsvParser {
 		}
 		return ExcelData.createWithoutId(
 			dataFragments[0],
-			LocalDateTime.parse(dataFragments[1]),
-			LocalDateTime.parse(dataFragments[2]),
+			parseDateTime(dataFragments[1]),
+			parseDateTime(dataFragments[2]),
 			dataFragments[3],
 			new BigDecimal(dataFragments[4])
 		);
+	}
+
+	private LocalDateTime parseDateTime(String dateTime) {
+		if (dateTime.charAt(dateTime.length() - 1) == 'Z') {
+			return LocalDateTime.parse(dateTime.substring(0, dateTime.length() - 1));
+		}
+		return LocalDateTime.parse(dateTime);
 	}
 
 }
