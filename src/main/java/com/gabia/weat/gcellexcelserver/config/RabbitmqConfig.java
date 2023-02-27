@@ -60,24 +60,6 @@ public class RabbitmqConfig {
 	}
 
 	@Bean
-	Queue fileCreateProgressQueue() {
-		return new Queue(property.getQueue().getFileCreateProgressQueue(serverName), true);
-	}
-
-	@Bean
-	FanoutExchange fileCreateProgressExchange() {
-		return new FanoutExchange(property.getExchange().getFileCreateProgressExchange(), true, false);
-	}
-
-	@Bean
-	Declarables fileCreateProgressBindings() {
-		return new Declarables(
-			BindingBuilder.bind(fileCreateProgressQueue()).
-				to(fileCreateProgressExchange())
-		);
-	}
-
-	@Bean
 	SimpleRabbitListenerContainerFactory fileCreateRequestListenerFactory() {
 		SimpleRabbitListenerContainerFactory listenerContainerFactory = new SimpleRabbitListenerContainerFactory();
 		listenerContainerFactory.setConnectionFactory(connectionFactory());
