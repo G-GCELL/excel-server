@@ -37,7 +37,6 @@ rabbitmq:
     file-create-progress-exchange: ${FILE_CREATE_PROGRESS_EXCHANGE}
   queue:
     file-create-request-queue: ${FILE_CREATE_REQUEST_QUEUE}
-    file-create-progress-queue: ${FILE_CREATE_PROGRESS_QUEUE}
   listener:
     concurrency: ${LISTENER_CONCURRENCY}
     max-concurrency: ${LISTENER_MAX_CONCURRENCY}

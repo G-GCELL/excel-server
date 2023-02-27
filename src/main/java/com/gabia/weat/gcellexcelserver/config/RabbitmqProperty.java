@@ -28,11 +28,6 @@ public class RabbitmqProperty {
 	@AllArgsConstructor
 	public static class QueueProperty {
 		private String fileCreateRequestQueue;
-		private String fileCreateProgressQueue;
-
-		public String getFileCreateProgressQueue(String serverName) {
-			return fileCreateProgressQueue + "-" + serverName.substring(serverName.length() - 1);
-		}
 	}
 
 	@Getter
