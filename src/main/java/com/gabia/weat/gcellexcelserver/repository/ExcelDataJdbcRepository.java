@@ -9,6 +9,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -60,6 +61,17 @@ public class ExcelDataJdbcRepository {
 					return excelDataList.size();
 				}
 			});
+	}
+
+	public void deleteWithYearMonth(YearMonth target) {
+		if (target == null) {
+			return;
+		}
+		LocalDateTime from = LocalDateTime.of(target.getYear(), target.getMonth(), 1, 0, 0, 0);
+		LocalDateTime to = LocalDateTime.of(target.getYear(), target.getMonth(), target.atEndOfMonth().getDayOfMonth(),
+			23, 59, 59);
+		String sql = "delete from excel_data where start_date between ? and ?";
+		jdbcTemplate.update(sql, from, to);
 	}
 
 	public ResultSetDto getResultSet(FileCreateRequestMsgDto dto) throws SQLException {
