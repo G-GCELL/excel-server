@@ -5,6 +5,7 @@ import java.util.Objects;
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Declarables;
+import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
@@ -57,6 +58,25 @@ public class RabbitmqConfig {
 	@Bean
 	RabbitAdmin rabbitAdmin() {
 		return new RabbitAdmin(connectionFactory());
+	}
+
+	@Bean
+	DirectExchange directExchange() {
+		return new DirectExchange(property.getExchange().getDirectExchange(), true, false);
+	}
+
+	@Bean
+	Queue fileCreateRequestQueue() {
+		return new Queue(property.getQueue().getFileCreateRequestQueue(), true);
+	}
+
+	@Bean
+	Declarables directExchangeBindings() {
+		return new Declarables(
+			BindingBuilder.bind(fileCreateRequestQueue())
+				.to(directExchange())
+				.with(property.getRoutingKey().getFileCreateRequestRoutingKey())
+		);
 	}
 
 	@Bean
