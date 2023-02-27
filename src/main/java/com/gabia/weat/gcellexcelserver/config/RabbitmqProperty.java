@@ -17,11 +17,13 @@ public class RabbitmqProperty {
 	private ExchangeProperty exchange;
 	private QueueProperty queue;
 	private ListenerProperty listener;
+	private RoutingKeyProperty routingKey;
 
 	@Getter
 	@AllArgsConstructor
 	public static class ExchangeProperty {
 		private String fileCreateProgressExchange;
+		private String directExchange;
 	}
 
 	@Getter
@@ -36,6 +38,12 @@ public class RabbitmqProperty {
 		private Integer concurrency;
 		private Integer maxConcurrency;
 		private Integer prefetch;
+	}
+
+	@Getter
+	@AllArgsConstructor
+	public static class RoutingKeyProperty {
+		private String fileCreateRequestRoutingKey;
 	}
 
 }

@@ -35,9 +35,12 @@ rabbitmq:
   password: ${RABBITMQ_PASSWORD}
   exchange:
     file-create-progress-exchange: ${FILE_CREATE_PROGRESS_EXCHANGE}
+    direct-exchange: ${DIRECT_EXCHANGE}
   queue:
     file-create-request-queue: ${FILE_CREATE_REQUEST_QUEUE}
   listener:
     concurrency: ${LISTENER_CONCURRENCY}
     max-concurrency: ${LISTENER_MAX_CONCURRENCY}
     prefetch: ${LISTENER_PREFETCH}
+  routing-key:
+    file-create-request-routing-key: ${FILE_CREATE_REQUEST_ROUTING_KEY}
