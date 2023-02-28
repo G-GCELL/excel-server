@@ -54,4 +54,12 @@ public class MessageDto {
 	) {
 	}
 
+	public record FileCreateErrorMsgDto(
+		Long memberId,
+		Long excelInfoId,
+		int errorCode,
+		String errorMessage
+	) {
+	}
+
 }
