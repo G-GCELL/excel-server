@@ -15,12 +15,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FileCreateProgressProducer implements Producer<FileCreateProgressMsgDto> {
 
-	private final RabbitTemplate rabbitTemplate;
+	private final RabbitTemplate fileCreateProgressRabbitTemplate;
 
+	@Override
 	@ProducerLog(exchange = "${rabbitmq.exchange.file-create-progress-exchange}")
 	public void sendMessage(MessageWrapperDto<FileCreateProgressMsgDto> message) {
 		CorrelationData correlationData = new CorrelationData();
-		rabbitTemplate.correlationConvertAndSend(message, correlationData);
+		fileCreateProgressRabbitTemplate.correlationConvertAndSend(message, correlationData);
 	}
 
 }
