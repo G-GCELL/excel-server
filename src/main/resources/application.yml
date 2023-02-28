@@ -36,6 +36,7 @@ rabbitmq:
   exchange:
     file-create-progress-exchange: ${FILE_CREATE_PROGRESS_EXCHANGE}
     direct-exchange: ${DIRECT_EXCHANGE}
+    file-create-error-exchange: ${FILE_CREATE_ERROR_EXCHANGE}
   queue:
     file-create-request-queue: ${FILE_CREATE_REQUEST_QUEUE}
   listener:

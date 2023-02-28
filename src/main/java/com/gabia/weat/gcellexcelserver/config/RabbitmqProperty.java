@@ -24,6 +24,7 @@ public class RabbitmqProperty {
 	public static class ExchangeProperty {
 		private String fileCreateProgressExchange;
 		private String directExchange;
+		private String fileCreateErrorExchange;
 	}
 
 	@Getter
