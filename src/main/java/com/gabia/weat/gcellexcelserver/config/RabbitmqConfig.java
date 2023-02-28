@@ -118,6 +118,25 @@ public class RabbitmqConfig {
 	}
 
 	@Bean
+	RabbitTemplate fileCreateErrorRabbitTemplate() {
+		RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory());
+		rabbitTemplate.setExchange(property.getExchange().getFileCreateErrorExchange());
+		rabbitTemplate.setMessageConverter(messageConverter());
+		rabbitTemplate.setMandatory(true);
+
+		// 임시 코드
+		rabbitTemplate.setConfirmCallback((correlationData, ack, cause) -> {
+			if (!ack || Objects.requireNonNull(correlationData).getReturned() != null) {
+				log.info("[메시지 발행 실패] " + cause);
+				return;
+			}
+			log.info("[메시지 발행 성공]");
+		});
+
+		return rabbitTemplate;
+	}
+
+	@Bean
 	MessageConverter messageConverter() {
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.registerModule(new JavaTimeModule());
