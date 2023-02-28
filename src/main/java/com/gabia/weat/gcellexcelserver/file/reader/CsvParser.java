@@ -8,9 +8,9 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,6 +18,7 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -71,17 +72,18 @@ public class CsvParser {
 	}
 
 	private File copyOriginCsv(String csvFilePath) throws IOException {
-		LocalDateTime now = LocalDateTime.now();
 		File srcFile = new File(csvFilePath);
-		File destFile = new File(
-			now.format(DateTimeFormatter.ofPattern("yyyy/M"))
-				+ File.separator
-				+ now.getDayOfMonth()
-				+ "_"
-				+ new File(csvFilePath).getName()
-		);
+		File destFile = new File(getDateDirectoryPath(LocalDate.now()) + File.separator + getFileName(csvFilePath));
 		FileUtils.copyFile(srcFile, destFile);
 		return destFile;
+	}
+
+	private String getDateDirectoryPath(LocalDate time) {
+		return time.toString().replace("-", File.separator);
+	}
+
+	private String getFileName(String filePath) {
+		return FilenameUtils.getBaseName(filePath) + FilenameUtils.getExtension(filePath);
 	}
 
 	private void skipHeader(BufferedReader bufferedReader) throws IOException {
