@@ -3,6 +3,7 @@ package com.gabia.weat.gcellexcelserver.aspect;
 import com.gabia.weat.gcellexcelserver.annotation.ConsumerLog;
 import com.gabia.weat.gcellexcelserver.annotation.JobLog;
 import com.gabia.weat.gcellexcelserver.annotation.ProducerLog;
+import com.gabia.weat.gcellexcelserver.domain.type.JobActionType;
 import com.gabia.weat.gcellexcelserver.domain.type.TargetType;
 import com.gabia.weat.gcellexcelserver.dto.MessageWrapperDto;
 import com.gabia.weat.gcellexcelserver.dto.log.JobLogFormatDto.JobLogFormatDtoBuilder;
@@ -60,14 +61,16 @@ public class LogAspect {
 	}
 
 	private Object jobLogAdviceLog(ProceedingJoinPoint joinPoint, String jobName) throws Throwable {
+		Object returnValue = null;
 		try {
 			logFormatFactory.startTrace();
-			this.printJobLog(jobName);
-			return joinPoint.proceed();
+			this.printJobLog(jobName, this.getInput(joinPoint), JobActionType.JOB_START);
+			returnValue = joinPoint.proceed();
 		} catch (Exception e) {
 			this.printErrorLog(e);
 		}
-		return null;
+		this.printJobLog(jobName, this.getInput(joinPoint), JobActionType.JOB_FINISH);
+		return returnValue;
 	}
 
 	private void setTraceId(ProceedingJoinPoint joinPoint){
@@ -123,9 +126,11 @@ public class LogAspect {
 			.build());
 	}
 
-	private void printJobLog(String jobName) {
+	private void printJobLog(String jobName, String input, JobActionType action) {
 		JobLogFormatDtoBuilder jobLogFormatDtoBuilder = logFormatFactory.getJobLogFormatBuilder()
-			.jobName(jobName);
+			.jobName(jobName)
+			.input(input)
+			.action(action);
 
 		logPrinter.print(jobLogFormatDtoBuilder.build());
 	}
