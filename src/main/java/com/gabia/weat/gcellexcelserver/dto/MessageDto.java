@@ -64,20 +64,6 @@ public class MessageDto {
 		String filePath,
 		YearMonth deleteTarget
 	) {
-		@Override
-		public boolean equals(Object o) {
-			if (this == o)
-				return true;
-			if (o == null || getClass() != o.getClass())
-				return false;
-			CsvUpdateRequestDto that = (CsvUpdateRequestDto)o;
-			return filePath.equals(that.filePath);
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hash(filePath);
-		}
 	}
 
 }
