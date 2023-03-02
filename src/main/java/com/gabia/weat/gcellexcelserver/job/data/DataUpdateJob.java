@@ -1,4 +1,4 @@
-package com.gabia.weat.gcellexcelserver.job;
+package com.gabia.weat.gcellexcelserver.job.data;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,9 +20,8 @@ public class DataUpdateJob {
 	private final CsvParser csvParser;
 
 	@JobLog(jobName = "update with file")
-	public void updateWithFilePath(String path) throws SQLException, IOException {
-		int baseName = Integer.parseInt(FilenameUtils.getBaseName(new File(path).getName()));
-		csvParser.insertWithCsv(path, YearMonth.of(baseName / 100, baseName % 100));
+	public void updateWithFilePath(String path, YearMonth deleteTarget) throws SQLException, IOException {
+		csvParser.insertWithCsv(path, deleteTarget);
 	}
 
 }
