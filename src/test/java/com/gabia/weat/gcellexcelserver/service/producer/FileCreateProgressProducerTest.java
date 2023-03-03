@@ -40,6 +40,7 @@ public class FileCreateProgressProducerTest {
 	private FileCreateProgressMsgDto getCreateProgressMsgDto() {
 		return new FileCreateProgressMsgDto(
 			1L,
+			1L,
 			MessageType.FILE_CREATION_PROGRESS,
 			"testFileName",
 			10

@@ -48,6 +48,7 @@ public class FileCreateRequestConsumerTest {
 	private FileCreateRequestMsgDto getFileCreateRequestDto() {
 		return new FileCreateRequestMsgDto(
 			1L,
+			1L,
 			"testFileName",
 			null,
 			null,
