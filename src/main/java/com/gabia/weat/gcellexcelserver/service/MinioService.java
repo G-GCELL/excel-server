@@ -6,6 +6,9 @@ import java.io.FileInputStream;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.gabia.weat.gcellexcelserver.error.ErrorCode;
+import com.gabia.weat.gcellexcelserver.error.exception.CustomException;
+
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +30,8 @@ public class MinioService {
 				.stream(fileInputStream, file.length(), -1)
 				.build()
 			);
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception exception) {
+			throw new CustomException(exception, ErrorCode.MINIO_UPLOAD_FAIL);
 		}
 		file.delete();
 	}

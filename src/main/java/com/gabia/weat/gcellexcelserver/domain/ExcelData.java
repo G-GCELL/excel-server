@@ -8,8 +8,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -18,13 +16,6 @@ import lombok.ToString;
 @Entity
 @ToString
 @NoArgsConstructor
-@Table(indexes = {
-	@Index(columnList = "accountId"),
-	@Index(columnList = "startDate"),
-	@Index(columnList = "endDate"),
-	@Index(columnList = "productCode"),
-	@Index(columnList = "cost")
-})
 public class ExcelData {
 
 	@Id

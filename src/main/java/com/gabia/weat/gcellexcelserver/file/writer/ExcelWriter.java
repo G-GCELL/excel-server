@@ -1,10 +1,12 @@
 package com.gabia.weat.gcellexcelserver.file.writer;
 
-import com.gabia.weat.gcellexcelserver.domain.type.MessageType;
+import com.gabia.weat.gcellexcelserver.converter.MessageMetaDtoConverter;
 import com.gabia.weat.gcellexcelserver.dto.JdbcDto.ResultSetDto;
-import com.gabia.weat.gcellexcelserver.dto.MessageDto.CreateProgressMsgDto;
-import com.gabia.weat.gcellexcelserver.dto.MsgMetaDto;
-import com.gabia.weat.gcellexcelserver.service.producer.CreateProgressProducer;
+import com.gabia.weat.gcellexcelserver.dto.MessageWrapperDto;
+import com.gabia.weat.gcellexcelserver.dto.MessageMetaDto;
+import com.gabia.weat.gcellexcelserver.error.ErrorCode;
+import com.gabia.weat.gcellexcelserver.error.exception.CustomException;
+import com.gabia.weat.gcellexcelserver.service.producer.FileCreateProgressProducer;
 
 import org.dhatim.fastexcel.Workbook;
 import org.dhatim.fastexcel.Worksheet;
@@ -12,9 +14,11 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,17 +27,21 @@ import lombok.RequiredArgsConstructor;
 public class ExcelWriter {
 
     private final int MAX_ROWS = 1_048_576;
-    private final CreateProgressProducer createProgressProducer;
+    private final int FLUSH_UNIT = 100;
+    private final FileCreateProgressProducer fileCreateProgressProducer;
 
-    public File writeWithProgress(ResultSetDto resultSetDto, String fileName, MsgMetaDto dto) {
+    public File writeWithProgress(ResultSetDto resultSetDto, String fileName, MessageMetaDto dto) {
         validateResult(resultSetDto);
         File file = new File(fileName);
         try (FileOutputStream fileOutputStream = new FileOutputStream(file);
              ResultSet resultSet = resultSetDto.resultSet()) {
+
             Workbook workbook = new Workbook(fileOutputStream, "GCELL", null);
             String[] columnNames = getColumnNames(resultSet.getMetaData());
             int[] columnTypes = getColumnsTypes(resultSet.getMetaData());
-            Worksheet[] worksheets = setSheetWithHeader(workbook, resultSetDto.resultSetCount(), columnNames);
+
+            int sheetIndex = 0;
+            Worksheet worksheet = setSheetWithHeader(workbook, columnNames, sheetIndex++);
 
             int standard = calculateStandard(resultSetDto.resultSetCount());
             int rowCount = 1;
@@ -41,12 +49,17 @@ public class ExcelWriter {
                 if (rowCount % standard == 0 && rowCount / standard < 10) {
                     sendProgressRateMsg(dto, (rowCount / standard) * 10);
                 }
-                writeExcelRow(worksheets, rowCount++, resultSet, columnTypes);
+                if (rowCount % MAX_ROWS == 0) {
+                    worksheet.finish();
+                    worksheet = setSheetWithHeader(workbook, columnNames, sheetIndex++);
+                }
+                writeExcelRow(worksheet, rowCount++, resultSet, columnTypes);
             }
             sendProgressRateMsg(dto, 100);
             workbook.finish();
         } catch (Exception exception) {
-            exception.printStackTrace();
+            file.delete();
+            throw new CustomException(exception, ErrorCode.EXCEL_WRITE_FAIL);
         }
         return file;
     }
@@ -72,8 +85,7 @@ public class ExcelWriter {
     private void validateResult(ResultSetDto resultSetDto) {
         Integer resultCount = resultSetDto.resultSetCount();
         if (resultCount == null || resultCount <= 0) {
-            // TODO: Global Exception 처리
-            throw new RuntimeException();
+            throw new CustomException(ErrorCode.NO_RESULT);
         }
     }
 
@@ -84,13 +96,10 @@ public class ExcelWriter {
         return resultSetCount / 10;
     }
 
-    private Worksheet[] setSheetWithHeader(Workbook workbook, Integer resultSetCount, String[] columnNames) {
-        Worksheet[] worksheets = new Worksheet[(resultSetCount / MAX_ROWS) + 1];
-        for (int i = 0; i < worksheets.length; i++) {
-            worksheets[i] = workbook.newWorksheet("sheet" + i);
-            writeHeaderWithBold(worksheets[i], columnNames);
-        }
-        return worksheets;
+    private Worksheet setSheetWithHeader(Workbook workbook, String[] columnNames, int sheetIndex) {
+        Worksheet worksheet = workbook.newWorksheet("sheet" + sheetIndex);
+        writeHeaderWithBold(worksheet, columnNames);
+        return worksheet;
     }
 
     private void writeHeaderWithBold(Worksheet worksheet, String[] columnNames) {
@@ -100,12 +109,11 @@ public class ExcelWriter {
         }
     }
 
-    private void writeExcelRow(Worksheet[] worksheets, int rowCount, ResultSet resultSet,
-                                      int[] columnTypes) throws SQLException {
+    private void writeExcelRow(Worksheet worksheet, int rowCount, ResultSet resultSet,
+        int[] columnTypes) throws SQLException, IOException {
         int currentRow = rowCount % MAX_ROWS;
         currentRow = currentRow == 0 ? currentRow + 1 : currentRow;
         for (int i = 0; i < columnTypes.length; i++) {
-            Worksheet worksheet = worksheets[rowCount / MAX_ROWS];
             switch (columnTypes[i]) {
                 case ColumnType.BIGINT -> worksheet.value(currentRow, i, resultSet.getLong(i + 1));
                 case ColumnType.VARCHAR, ColumnType.DATETIME -> worksheet.value(currentRow, i, resultSet.getString(i + 1));
@@ -113,15 +121,16 @@ public class ExcelWriter {
                     worksheet.value(currentRow, i, String.format("%.20f", resultSet.getBigDecimal(i + 1)));
             }
         }
+        if (rowCount % FLUSH_UNIT == 0) {
+            worksheet.flush();
+        }
     }
 
-    private void sendProgressRateMsg(MsgMetaDto dto, int rate) {
-        createProgressProducer.sendMessage(new CreateProgressMsgDto(
-            dto.memberId(),
-            MessageType.FILE_CREATION_PROGRESS,
-            dto.fileName(),
-            rate
-        ));
+    private void sendProgressRateMsg(MessageMetaDto dto, int rate) {
+        fileCreateProgressProducer.sendMessage(
+            MessageWrapperDto.wrapMessageDto(
+                MessageMetaDtoConverter.toFileCreateProgressMsgDto(dto, rate), dto.traceId())
+        );
     }
 
 }

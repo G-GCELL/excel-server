@@ -5,14 +5,19 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
 import com.gabia.weat.gcellexcelserver.dto.JdbcDto.QuerySetDto;
 import com.gabia.weat.gcellexcelserver.dto.JdbcDto.ResultSetDto;
+import com.gabia.weat.gcellexcelserver.dto.MessageDto.FileCreateRequestMsgDto;
+import com.gabia.weat.gcellexcelserver.error.ErrorCode;
+import com.gabia.weat.gcellexcelserver.error.exception.CustomException;
 import com.gabia.weat.gcellexcelserver.repository.query.QueryGenerator;
 
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +27,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.gabia.weat.gcellexcelserver.domain.ExcelData;
-import com.gabia.weat.gcellexcelserver.dto.FileDto.FileCreateRequestDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -58,8 +62,9 @@ public class ExcelDataJdbcRepository {
 			});
 	}
 
-	public ResultSetDto getResultSet(FileCreateRequestDto dto) throws SQLException {
+	public ResultSetDto getResultSet(FileCreateRequestMsgDto dto) throws SQLException {
 		Connection conn = getConnection();
+		validateColumnNames(dto.columnNames(), conn);
 
 		QuerySetDto querySet = queryGenerator.generateCountQuery(dto);
 		PreparedStatement statement = conn.prepareStatement(querySet.sql());
@@ -87,6 +92,17 @@ public class ExcelDataJdbcRepository {
 			properties.getPassword());
 	}
 
+	private void validateColumnNames(List<String> columnNames, Connection conn) throws SQLException {
+		PreparedStatement statement = conn.prepareStatement(queryGenerator.generateSingleResultQuery());
+		ResultSet resultSet = statement.executeQuery();
+		List<String> columnList = getColumnNames(resultSet.getMetaData());
+		for (String columnName : columnNames) {
+			if (!columnList.contains(columnName)) {
+				throw new CustomException(ErrorCode.INVALID_COLUMN_NAME);
+			}
+		}
+	}
+
 	private void bindParam(PreparedStatement statement, Entry<Integer, Object> entry) throws SQLException {
 		switch (entry.getValue().getClass().getSimpleName()) {
 			case "String" -> statement.setString(entry.getKey(), (String)entry.getValue());
@@ -96,6 +112,15 @@ public class ExcelDataJdbcRepository {
 			);
 			case "BigDecimal" -> statement.setBigDecimal(entry.getKey(), (BigDecimal)entry.getValue());
 		}
+	}
+
+	private List<String> getColumnNames(ResultSetMetaData metaData) throws SQLException {
+		int columnCount = metaData.getColumnCount();
+		List<String> columnNames = new ArrayList<>(columnCount);
+		for (int i = 1; i <= columnCount; i++) {
+			columnNames.add(metaData.getColumnName(i));
+		}
+		return columnNames;
 	}
 
 }
