@@ -2,6 +2,7 @@ package com.gabia.weat.gcellexcelserver.job;
 
 import java.io.File;
 import java.time.YearMonth;
+import java.util.Arrays;
 
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -30,28 +31,26 @@ public class JobManager {
 		if (files == null) {
 			return;
 		}
-		for (File file : files) {
-			if (FileValidator.isToUpdate(file)) {
-				int baseNameInteger = Integer.parseInt(FilenameUtils.getBaseName(file.getName()));
-				queue.add(new CsvUpdateRequestDto(
-					DATA_FILE_DIRECTORY + File.separator + file.getName(),
-					YearMonth.of(baseNameInteger / 100, baseNameInteger % 100)
-				));
-			}
-		}
+		Arrays.stream(files).filter(FileValidator::isToUpdate).forEach(file -> {
+			int baseNameInteger = Integer.parseInt(FilenameUtils.getBaseName(file.getName()));
+			queue.add(new CsvUpdateRequestDto(
+				DATA_FILE_DIRECTORY + File.separator + file.getName(),
+				YearMonth.of(baseNameInteger / 100, baseNameInteger % 100)
+			));
+		});
 	}
 
-	@JobLog(jobName = "update with Queue")
+	@JobLog(jobName = "update with queue")
 	@Scheduled(cron = "0 15/30 * * * ?")
 	public void updateExcelData() {
 		while (!queue.isEmpty()) {
-			CsvUpdateRequestDto csvUpdateRequestDto = queue.poll();
-			update(csvUpdateRequestDto.filePath(), csvUpdateRequestDto.deleteTarget());
+			CsvUpdateRequestDto dto = queue.poll();
+			update(dto.filePath(), dto.deleteTarget());
 		}
 	}
 
 	public void addQueueManual(@Valid CsvUpdateRequestDto csvUpdateRequestDto) {
-		if (FileValidator.isCsvFile(new File(csvUpdateRequestDto.filePath())) && !queue.contains(csvUpdateRequestDto)) {
+		if (FileValidator.isCsvFile(new File(csvUpdateRequestDto.filePath()))) {
 			queue.addManual(csvUpdateRequestDto);
 		}
 	}

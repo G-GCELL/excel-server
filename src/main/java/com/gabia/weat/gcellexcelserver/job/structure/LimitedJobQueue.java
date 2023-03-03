@@ -25,10 +25,6 @@ public class LimitedJobQueue {
 		return queue.poll();
 	}
 
-	public boolean contains(CsvUpdateRequestDto dto) {
-		return queue.contains(dto);
-	}
-
 	public boolean isEmpty() {
 		return queue.isEmpty();
 	}

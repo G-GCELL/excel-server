@@ -1,11 +1,9 @@
 package com.gabia.weat.gcellexcelserver.job.data;
 
-import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.YearMonth;
 
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Component;
 
 import com.gabia.weat.gcellexcelserver.annotation.JobLog;
