@@ -18,6 +18,8 @@ public class MessageDto {
 	public record FileCreateRequestMsgDto(
 		@NotNull
 		Long memberId,
+		@NotNull
+		Long excelInfoId,
 		@NotBlank
 		String fileName,
 		@NotEmpty
@@ -48,9 +50,18 @@ public class MessageDto {
 	@Builder
 	public record FileCreateProgressMsgDto(
 		Long memberId,
+		Long excelInfoId,
 		MessageType messageType,
 		String memberFileName,
 		Integer progressRate
+	) {
+	}
+
+	public record FileCreateErrorMsgDto(
+		Long memberId,
+		Long excelInfoId,
+		int errorCode,
+		String errorMessage
 	) {
 	}
 

@@ -20,7 +20,7 @@ import com.gabia.weat.gcellexcelserver.dto.MessageWrapperDto;
 public class FileCreateProgressProducerTest {
 
 	@Mock
-	private RabbitTemplate rabbitTemplate;
+	private RabbitTemplate fileCreateProgressRabbitTemplate;
 	@InjectMocks
 	private FileCreateProgressProducer fileCreateProgressProducer;
 
@@ -34,11 +34,12 @@ public class FileCreateProgressProducerTest {
 
 		// when & then
 		assertThatCode(() -> fileCreateProgressProducer.sendMessage(messageWrapperDto)).doesNotThrowAnyException();
-		verify(rabbitTemplate, times(1)).correlationConvertAndSend(eq(messageWrapperDto), any(CorrelationData.class));
+		verify(fileCreateProgressRabbitTemplate, times(1)).correlationConvertAndSend(eq(messageWrapperDto), any(CorrelationData.class));
 	}
 
 	private FileCreateProgressMsgDto getCreateProgressMsgDto() {
 		return new FileCreateProgressMsgDto(
+			1L,
 			1L,
 			MessageType.FILE_CREATION_PROGRESS,
 			"testFileName",
