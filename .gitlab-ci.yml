@@ -74,8 +74,8 @@ deploy:
     - docker login -u $CI_REGISTRY_USER_NAME -p $CI_REGISTRY_TOKEN $CI_REGISTRY
   script:
     - docker ps -a
-    - docker-compose -f $API_DOCKER_COMPOSE down
-    - docker-compose -f $API_DOCKER_COMPOSE up -d --scale $SCALE_OPTION
+    - docker-compose -f $EXCEL_DOCKER_COMPOSE down
+    - docker-compose -f $EXCEL_DOCKER_COMPOSE up -d --scale $SCALE_OPTION
     - docker ps -a
   after_script:
     - docker logout
