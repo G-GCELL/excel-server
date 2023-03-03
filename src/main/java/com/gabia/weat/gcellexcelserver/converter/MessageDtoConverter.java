@@ -8,6 +8,7 @@ public class MessageDtoConverter {
 	public static MessageMetaDto toMessageMetaDto(FileCreateRequestMsgDto fileCreateRequestMsgDto, String traceId) {
 		return MessageMetaDto.builder()
 			.memberId(fileCreateRequestMsgDto.memberId())
+			.excelInfoId(fileCreateRequestMsgDto.excelInfoId())
 			.fileName(fileCreateRequestMsgDto.fileName())
 			.traceId(traceId)
 			.build();
