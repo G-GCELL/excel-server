@@ -10,6 +10,24 @@ spring:
     hikari:
       maximum-pool-size: ${DB_POOL_MAX_SIZE}
       connection-timeout: ${DB_CONNECTION_TIMEOUT}
+    application:
+      name: monitoring
+
+management:
+  endpoint:
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics, prometheus
+
+  metrics:
+    tags:
+      application: test-name
 
   jpa:
     show-sql: true
