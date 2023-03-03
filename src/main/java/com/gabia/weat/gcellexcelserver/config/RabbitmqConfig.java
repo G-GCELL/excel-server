@@ -5,6 +5,7 @@ import java.util.Objects;
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Declarables;
+import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
@@ -60,20 +61,21 @@ public class RabbitmqConfig {
 	}
 
 	@Bean
-	Queue fileCreateProgressQueue() {
-		return new Queue(property.getQueue().getFileCreateProgressQueue(serverName), true);
+	DirectExchange directExchange() {
+		return new DirectExchange(property.getExchange().getDirectExchange(), true, false);
 	}
 
 	@Bean
-	FanoutExchange fileCreateProgressExchange() {
-		return new FanoutExchange(property.getExchange().getFileCreateProgressExchange(), true, false);
+	Queue fileCreateRequestQueue() {
+		return new Queue(property.getQueue().getFileCreateRequestQueue(), true);
 	}
 
 	@Bean
-	Declarables fileCreateProgressBindings() {
+	Declarables directExchangeBindings() {
 		return new Declarables(
-			BindingBuilder.bind(fileCreateProgressQueue()).
-				to(fileCreateProgressExchange())
+			BindingBuilder.bind(fileCreateRequestQueue())
+				.to(directExchange())
+				.with(property.getRoutingKey().getFileCreateRequestRoutingKey())
 		);
 	}
 
