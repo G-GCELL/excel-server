@@ -20,7 +20,7 @@ public class FileCreateRequestConsumer implements Consumer<FileCreateRequestMsgD
 
 	@Override
 	@ConsumerLog(queue = "${rabbitmq.queue.file-create-request-queue}")
-	@RabbitListener(containerFactory = "fileCreateRequestListenerFactory")
+	@RabbitListener(containerFactory = "fileCreateRequestListenerFactory", errorHandler = "customListenerErrorHandler")
 	public void receiveMessage(MessageWrapperDto<FileCreateRequestMsgDto> message) throws Exception {
 		excelDataService.createExcelFile(message);
 	}
