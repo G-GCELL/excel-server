@@ -56,8 +56,8 @@ public class LogAspect {
 			return joinPoint.proceed();
 		} catch (Exception e) {
 			this.printErrorLog(e);
+			throw e;
 		}
-		return null;
 	}
 
 	private Object jobLogAdviceLog(ProceedingJoinPoint joinPoint, String jobName) throws Throwable {
