@@ -3,6 +3,8 @@ server:
   name: ${SERVER_NAME}
 
 spring:
+  application:
+    name: monitoring
   datasource:
     url: jdbc:${DB}://${DB_HOST}:${DB_PORT}/${DB_NAME}?rewriteBatchedStatements=true
     username: ${DB_USER}
@@ -10,25 +12,6 @@ spring:
     hikari:
       maximum-pool-size: ${DB_POOL_MAX_SIZE}
       connection-timeout: ${DB_CONNECTION_TIMEOUT}
-    application:
-      name: monitoring
-
-management:
-  endpoint:
-    metrics:
-      enabled: true
-    prometheus:
-      enabled: true
-
-  endpoints:
-    web:
-      exposure:
-        include: health, info, metrics, prometheus
-
-  metrics:
-    tags:
-      application: test-name
-
   jpa:
     show-sql: false
     hibernate:
@@ -69,3 +52,17 @@ rabbitmq:
     prefetch: ${LISTENER_PREFETCH}
   routing-key:
     file-create-request-routing-key: ${FILE_CREATE_REQUEST_ROUTING_KEY}
+
+management:
+  endpoint:
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics, prometheus
+  metrics:
+    tags:
+      application: test-name
