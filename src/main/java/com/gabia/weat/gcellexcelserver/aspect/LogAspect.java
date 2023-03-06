@@ -74,7 +74,6 @@ public class LogAspect {
 	}
 
 	private void setTraceId(ProceedingJoinPoint joinPoint){
-
 		Object[] args = joinPoint.getArgs();
 		for (Object arg : args){
 			if (arg instanceof MessageWrapperDto<?> dto){

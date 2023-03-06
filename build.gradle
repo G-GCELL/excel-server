@@ -96,8 +96,8 @@ jacocoTestReport {
 					"**/annotation/**",
 					"**/aspect/**",
 					"**/error/**",
-					"**/job/**",
-					"**/MessageMetaDtoConverter.class"
+					"**/converter/**",
+					"**/job/**"
 			])
 		}))
 	}
@@ -128,8 +128,8 @@ jacocoTestCoverageVerification {
 					"*.annotation.*",
 					"*.aspect.*",
 					"*.error.*",
-					"*.job.*",
-					"*.MessageMetaDtoConverter"
+					"*.converter.*",
+					"*.job.*"
 			]
 		}
 	}
