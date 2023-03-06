@@ -26,7 +26,8 @@ rabbitmq:
   password: password
   exchange:
     file-create-progress-exchange: exchange
-    direct-exchange: ${DIRECT_EXCHANGE}
+    direct-exchange: exchange
+    file-create-error-exchange: exchange
   queue:
     file-create-request-queue: queue
   listener:
