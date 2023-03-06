@@ -22,28 +22,29 @@ public class CustomListenerErrorHandler implements RabbitListenerErrorHandler {
 
 	@Override
 	public Object handleError(Message amqpMessage, org.springframework.messaging.Message<?> message,
-		ListenerExecutionFailedException exception) {
-		MessageWrapperDto<FileCreateRequestMsgDto> messageWrapperDto = (MessageWrapperDto<FileCreateRequestMsgDto>)message.getPayload();
+		ListenerExecutionFailedException exception) throws CustomException {
+		MessageWrapperDto<FileCreateRequestMsgDto> messageWrapperDto;
+		messageWrapperDto = (MessageWrapperDto<FileCreateRequestMsgDto>)message.getPayload();
 		Throwable t = exception.getCause();
 		String errorMessage = exception.getMessage();
-		int errorCode = ErrorCode.UNKNOWN_ERROR.getCode().getStatus();
+		ErrorCode errorCode = ErrorCode.UNKNOWN_ERROR;
 
 		if (t instanceof CustomException ce) {
 			errorMessage = ce.getErrorCode().getMessage();
-			errorCode = ce.getErrorCode().getCode().getStatus();
-		}
-		else if (t instanceof ConstraintViolationException) {
+			errorCode = ce.getErrorCode();
+		} else if (t instanceof ConstraintViolationException) {
 			errorMessage = ErrorCode.ESSENTIAL_VALUE_ERROR.getMessage();
-			errorCode = ErrorCode.ESSENTIAL_VALUE_ERROR.getCode().getStatus();
+			errorCode = ErrorCode.ESSENTIAL_VALUE_ERROR;
 		}
 
 		fileCreateErrorProducer.sendMessage(
 			MessageWrapperDto.wrapMessageDto(
-				MessageDtoConverter.toFileCreateErrorMsgDto(messageWrapperDto.getMessage(), errorMessage, errorCode),
+				MessageDtoConverter.toFileCreateErrorMsgDto(messageWrapperDto.getMessage(), errorMessage,
+					errorCode.getCode().getStatus()),
 				messageWrapperDto.getTraceId())
 		);
 
-		return null;
+		throw new CustomException(t, errorCode);
 	}
 
 }
