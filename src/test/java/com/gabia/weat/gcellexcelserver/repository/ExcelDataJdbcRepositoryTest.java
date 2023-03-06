@@ -10,15 +10,23 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 
+import com.gabia.weat.gcellexcelserver.config.RedissonConfig;
 import com.gabia.weat.gcellexcelserver.domain.ExcelData;
+import com.gabia.weat.gcellexcelserver.job.JobManager;
 
 @SpringBootTest
 class ExcelDataJdbcRepositoryTest {
 
+	@MockBean
+	private RedissonConfig redissonConfig;
+	@MockBean
+	private JobManager jobManager;
 	@Autowired
 	private ExcelDataRepository excelDataRepository;
-
 	@Autowired
 	private ExcelDataJdbcRepository excelDataJdbcRepository;
 
