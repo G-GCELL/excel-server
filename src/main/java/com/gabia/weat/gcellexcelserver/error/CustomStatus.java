@@ -15,6 +15,6 @@ public enum CustomStatus {
 	EXCEL_WRITE_FAIL(25001),
 	MINIO_UPLOAD_FAIL(25002);
 
-	private final int status;
+	private final int code;
 
 }

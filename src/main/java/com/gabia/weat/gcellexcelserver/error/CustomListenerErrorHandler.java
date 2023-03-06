@@ -40,7 +40,7 @@ public class CustomListenerErrorHandler implements RabbitListenerErrorHandler {
 		fileCreateErrorProducer.sendMessage(
 			MessageWrapperDto.wrapMessageDto(
 				MessageDtoConverter.toFileCreateErrorMsgDto(messageWrapperDto.getMessage(), errorMessage,
-					errorCode.getCode().getStatus()),
+					errorCode.getCustomStatus().getCode()),
 				messageWrapperDto.getTraceId())
 		);
 
