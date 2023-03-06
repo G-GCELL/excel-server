@@ -64,6 +64,9 @@ public class CsvParser {
 			}
 			excelDataJdbcRepository.insertExcelDataList(excelDataList);
 			connection.commit();
+		} catch (Exception exception) {
+			connection.rollback();
+			throw exception;
 		} finally {
 			DataSourceUtils.releaseConnection(connection, dataSource);
 			TransactionSynchronizationManager.unbindResource(dataSource);
