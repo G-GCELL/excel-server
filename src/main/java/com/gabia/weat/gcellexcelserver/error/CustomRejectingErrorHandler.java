@@ -3,13 +3,21 @@ package com.gabia.weat.gcellexcelserver.error;
 import org.springframework.amqp.rabbit.listener.ConditionalRejectingErrorHandler;
 import org.springframework.stereotype.Component;
 
+import com.gabia.weat.gcellexcelserver.dto.log.LogFormatFactory;
+import com.gabia.weat.gcellexcelserver.error.exception.CustomException;
+import com.gabia.weat.gcellexcelserver.service.log.LogPrinter;
+
+import lombok.RequiredArgsConstructor;
+
 @Component
+@RequiredArgsConstructor
 public class CustomRejectingErrorHandler extends ConditionalRejectingErrorHandler {
+
+	private final LogPrinter logPrinter;
 
 	@Override
 	protected void log(Throwable t) {
-		// 임시 코드
-		// Consumer 로그 출력 역할에 대한 논의 필요.
+		logPrinter.printErrorLog((Exception) t);
 	}
 
 }
