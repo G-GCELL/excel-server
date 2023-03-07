@@ -31,7 +31,7 @@ public class JobLogFormatDto extends LogFormatDto {
 	}
 
 	private StringBuilder frontFormat() {
-		return new StringBuilder(String.format("[%s] %s [%s] ",
+		return new StringBuilder(String.format("[%s] [%s] ",
 			this.serverName,
 			this.traceId
 		));
