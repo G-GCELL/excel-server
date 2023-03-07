@@ -17,7 +17,7 @@ public class CustomRejectingErrorHandler extends ConditionalRejectingErrorHandle
 
 	@Override
 	protected void log(Throwable t) {
-		logPrinter.printErrorLog((Exception) t);
+		logPrinter.printErrorLog((Exception) t.getCause());
 	}
 
 }
