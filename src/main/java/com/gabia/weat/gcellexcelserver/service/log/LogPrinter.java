@@ -1,9 +1,60 @@
 package com.gabia.weat.gcellexcelserver.service.log;
 
+import org.slf4j.event.Level;
+
+import com.gabia.weat.gcellexcelserver.domain.type.JobActionType;
+import com.gabia.weat.gcellexcelserver.domain.type.TargetType;
+import com.gabia.weat.gcellexcelserver.dto.log.JobLogFormatDto;
 import com.gabia.weat.gcellexcelserver.dto.log.LogFormatDto;
+import com.gabia.weat.gcellexcelserver.dto.log.LogFormatFactory;
+import com.gabia.weat.gcellexcelserver.dto.log.MessageBrokerLogFormatDto;
+import com.gabia.weat.gcellexcelserver.error.exception.CustomException;
+import com.gabia.weat.gcellexcelserver.parser.CustomExpressionParser;
 
-public interface LogPrinter {
+import lombok.RequiredArgsConstructor;
 
-	void print(LogFormatDto logFormatDto);
+@RequiredArgsConstructor
+public abstract class LogPrinter {
+
+	private final LogFormatFactory logFormatFactory;
+	private final CustomExpressionParser expressionBeanParser;
+
+	protected abstract void print(LogFormatDto logFormatDto);
+
+	public void printErrorLog(Exception e) {
+		String message = e.getMessage();
+		if (e instanceof CustomException ce) {
+			message = ce.getErrorCode().getMessage();
+		}
+		StackTraceElement stackTraceElement = e.getStackTrace()[0];
+		this.print(logFormatFactory.getErrorLogFormatBuilder()
+			.className(stackTraceElement.getClassName())
+			.methodName(stackTraceElement.getMethodName())
+			.exceptionName(e.getClass().getName())
+			.message(message)
+			.build());
+	}
+
+	public void printJobLog(String jobName, String input, JobActionType action) {
+		JobLogFormatDto.JobLogFormatDtoBuilder jobLogFormatDtoBuilder = logFormatFactory.getJobLogFormatBuilder()
+			.jobName(jobName)
+			.input(input)
+			.action(action);
+
+		this.print(jobLogFormatDtoBuilder.build());
+	}
+
+	public void printMessageBrokerLog(TargetType type, String target, String input, Exception exception) {
+		String targetName = (String) expressionBeanParser.parse(target);
+		MessageBrokerLogFormatDto.MessageBrokerLogFormatDtoBuilder logFormatDtoBuilder = logFormatFactory.getMessageBrokerLogFormatBuilder()
+			.level(exception == null ? Level.INFO : Level.ERROR)
+			.type(type)
+			.exchangeName(type == TargetType.PRODUCER ? targetName : null)
+			.queueName(type == TargetType.CONSUMER ? targetName : null)
+			.exception(exception)
+			.input(input);
+
+		this.print(logFormatDtoBuilder.build());
+	}
 
 }
