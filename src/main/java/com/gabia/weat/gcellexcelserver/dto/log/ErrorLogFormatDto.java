@@ -1,7 +1,5 @@
 package com.gabia.weat.gcellexcelserver.dto.log;
 
-import java.time.LocalDateTime;
-
 import org.slf4j.event.Level;
 
 import lombok.Builder;
@@ -27,9 +25,8 @@ public class ErrorLogFormatDto extends LogFormatDto {
 
 	@Override
 	public String toString() {
-		return String.format("[%s] %s [%s] %s-%s, cause: %s, message: %s",
+		return String.format("[%s] [%s] %s-%s, cause: %s, message: %s",
 			this.serverName,
-			LocalDateTime.now(),
 			this.traceId,
 			this.className,
 			this.methodName,
@@ -37,5 +34,6 @@ public class ErrorLogFormatDto extends LogFormatDto {
 			this.message
 		);
 	}
+
 
 }
