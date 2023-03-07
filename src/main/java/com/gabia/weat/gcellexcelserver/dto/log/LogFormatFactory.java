@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.gabia.weat.gcellexcelserver.dto.log.ErrorLogFormatDto.ErrorLogFormatDtoBuilder;
+import com.gabia.weat.gcellexcelserver.dto.log.JobLogFormatDto.JobLogFormatDtoBuilder;
 import com.gabia.weat.gcellexcelserver.dto.log.MessageBrokerLogFormatDto.MessageBrokerLogFormatDtoBuilder;
 
 @Component
@@ -17,7 +18,7 @@ public class LogFormatFactory {
 	private ThreadLocal<String> traceInfoHolder = new ThreadLocal<>();
 
 	public void startTrace() {
-		traceInfoHolder.set(RandomStringUtils.random(TRACE_ID_LENGTH));
+		traceInfoHolder.set(RandomStringUtils.random(TRACE_ID_LENGTH, true, true));
 	}
 
 	public void startTrace(String traceId) {
@@ -33,6 +34,13 @@ public class LogFormatFactory {
 
 	public MessageBrokerLogFormatDtoBuilder getMessageBrokerLogFormatBuilder() {
 		return MessageBrokerLogFormatDto.builder()
+			.level(Level.INFO)
+			.serverName(serverName)
+			.traceId(this.traceInfoHolder.get());
+	}
+
+	public JobLogFormatDtoBuilder getJobLogFormatBuilder() {
+		return JobLogFormatDto.builder()
 			.level(Level.INFO)
 			.serverName(serverName)
 			.traceId(this.traceInfoHolder.get());

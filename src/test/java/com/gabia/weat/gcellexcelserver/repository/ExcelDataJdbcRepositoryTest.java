@@ -18,7 +18,6 @@ class ExcelDataJdbcRepositoryTest {
 
 	@Autowired
 	private ExcelDataRepository excelDataRepository;
-
 	@Autowired
 	private ExcelDataJdbcRepository excelDataJdbcRepository;
 

@@ -1,13 +1,15 @@
 package com.gabia.weat.gcellexcelserver.aspect;
 
 import com.gabia.weat.gcellexcelserver.annotation.ConsumerLog;
+import com.gabia.weat.gcellexcelserver.annotation.JobLog;
 import com.gabia.weat.gcellexcelserver.annotation.ProducerLog;
+import com.gabia.weat.gcellexcelserver.domain.type.JobActionType;
 import com.gabia.weat.gcellexcelserver.domain.type.TargetType;
 import com.gabia.weat.gcellexcelserver.dto.MessageWrapperDto;
+import com.gabia.weat.gcellexcelserver.dto.log.JobLogFormatDto.JobLogFormatDtoBuilder;
 import com.gabia.weat.gcellexcelserver.dto.log.MessageBrokerLogFormatDto.MessageBrokerLogFormatDtoBuilder;
 
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.CodeSignature;
@@ -42,6 +44,11 @@ public class LogAspect {
 		return this.messageLogAdviceLog(joinPoint, TargetType.PRODUCER, producerLog.exchange());
 	}
 
+	@Around("@annotation(jobLog)")
+	public Object jobLogAdvisor(ProceedingJoinPoint joinPoint, JobLog jobLog) throws Throwable {
+		return this.jobLogAdviceLog(joinPoint, jobLog.jobName());
+	}
+
 	private Object messageLogAdviceLog(ProceedingJoinPoint joinPoint, TargetType type, String target) throws Throwable {
 		try {
 			this.setTraceId(joinPoint);
@@ -53,7 +60,21 @@ public class LogAspect {
 		return null;
 	}
 
+	private Object jobLogAdviceLog(ProceedingJoinPoint joinPoint, String jobName) throws Throwable {
+		Object returnValue = null;
+		try {
+			logFormatFactory.startTrace();
+			this.printJobLog(jobName, this.getInput(joinPoint), JobActionType.JOB_START);
+			returnValue = joinPoint.proceed();
+		} catch (Exception e) {
+			this.printErrorLog(e);
+		}
+		this.printJobLog(jobName, this.getInput(joinPoint), JobActionType.JOB_FINISH);
+		return returnValue;
+	}
+
 	private void setTraceId(ProceedingJoinPoint joinPoint){
+
 		Object[] args = joinPoint.getArgs();
 		for (Object arg : args){
 			if (arg instanceof MessageWrapperDto<?> dto){
@@ -103,6 +124,15 @@ public class LogAspect {
 			.exceptionName(e.getClass().getName())
 			.message(message)
 			.build());
+	}
+
+	private void printJobLog(String jobName, String input, JobActionType action) {
+		JobLogFormatDtoBuilder jobLogFormatDtoBuilder = logFormatFactory.getJobLogFormatBuilder()
+			.jobName(jobName)
+			.input(input)
+			.action(action);
+
+		logPrinter.print(jobLogFormatDtoBuilder.build());
 	}
 
 	private void printMessageBrokerLog(TargetType type, String target, String input) {

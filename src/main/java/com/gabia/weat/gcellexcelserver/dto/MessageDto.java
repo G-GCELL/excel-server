@@ -2,7 +2,9 @@ package com.gabia.weat.gcellexcelserver.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -57,11 +59,10 @@ public class MessageDto {
 	) {
 	}
 
-	public record FileCreateErrorMsgDto(
-		Long memberId,
-		Long excelInfoId,
-		int errorCode,
-		String errorMessage
+	public record CsvUpdateRequestDto(
+		@NotBlank
+		String filePath,
+		YearMonth deleteTarget
 	) {
 	}
 

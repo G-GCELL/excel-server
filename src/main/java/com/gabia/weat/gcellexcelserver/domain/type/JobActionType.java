@@ -1,8 +1,8 @@
 package com.gabia.weat.gcellexcelserver.domain.type;
 
-public enum TargetType {
+public enum JobActionType {
 
-	CONSUMER,
-	PRODUCER;
+	JOB_START,
+	JOB_FINISH
 
 }
