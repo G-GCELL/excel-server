@@ -1,7 +1,5 @@
 package com.gabia.weat.gcellexcelserver.dto.log;
 
-import java.time.LocalDateTime;
-
 import org.slf4j.event.Level;
 
 import com.gabia.weat.gcellexcelserver.domain.type.JobActionType;
@@ -33,9 +31,8 @@ public class JobLogFormatDto extends LogFormatDto {
 	}
 
 	private StringBuilder frontFormat() {
-		return new StringBuilder(String.format("[%s] %s [%s] ",
+		return new StringBuilder(String.format("[%s] [%s] ",
 			this.serverName,
-			LocalDateTime.now(),
 			this.traceId
 		));
 	}

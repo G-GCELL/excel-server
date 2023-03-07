@@ -6,8 +6,7 @@ import com.gabia.weat.gcellexcelserver.annotation.ProducerLog;
 import com.gabia.weat.gcellexcelserver.domain.type.JobActionType;
 import com.gabia.weat.gcellexcelserver.domain.type.TargetType;
 import com.gabia.weat.gcellexcelserver.dto.MessageWrapperDto;
-import com.gabia.weat.gcellexcelserver.dto.log.JobLogFormatDto.JobLogFormatDtoBuilder;
-import com.gabia.weat.gcellexcelserver.dto.log.MessageBrokerLogFormatDto.MessageBrokerLogFormatDtoBuilder;
+import com.gabia.weat.gcellexcelserver.dto.log.LogFormatFactory;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -18,9 +17,6 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.gabia.weat.gcellexcelserver.dto.log.LogFormatFactory;
-import com.gabia.weat.gcellexcelserver.error.exception.CustomException;
-import com.gabia.weat.gcellexcelserver.parser.CustomExpressionParser;
 import com.gabia.weat.gcellexcelserver.service.log.LogPrinter;
 
 import lombok.RequiredArgsConstructor;
@@ -32,16 +28,30 @@ public class LogAspect {
 
 	private final LogFormatFactory logFormatFactory;
 	private final LogPrinter logPrinter;
-	private final CustomExpressionParser expressionBeanParser;
 
 	@Around("@annotation(consumerLog)")
 	public Object consumerLogAdvisor(ProceedingJoinPoint joinPoint, ConsumerLog consumerLog) throws Throwable {
-		return this.messageLogAdviceLog(joinPoint, TargetType.CONSUMER, consumerLog.queue());
+		this.setTraceId(joinPoint);
+		logPrinter.printMessageBrokerLog(TargetType.CONSUMER, consumerLog.queue(), this.getInput(joinPoint), null);
+		return joinPoint.proceed();
 	}
 
 	@Around("@annotation(producerLog)")
 	public Object producerLogAdvisor(ProceedingJoinPoint joinPoint, ProducerLog producerLog) throws Throwable {
-		return this.messageLogAdviceLog(joinPoint, TargetType.PRODUCER, producerLog.exchange());
+		Exception exception = null;
+		try {
+			return joinPoint.proceed();
+		} catch (Exception e) {
+			exception = e;
+			throw e;
+		} finally {
+			logPrinter.printMessageBrokerLog(
+				TargetType.PRODUCER,
+				producerLog.exchange(),
+				this.getInput(joinPoint),
+				exception
+			);
+		}
 	}
 
 	@Around("@annotation(jobLog)")
@@ -49,34 +59,23 @@ public class LogAspect {
 		return this.jobLogAdviceLog(joinPoint, jobLog.jobName());
 	}
 
-	private Object messageLogAdviceLog(ProceedingJoinPoint joinPoint, TargetType type, String target) throws Throwable {
-		try {
-			this.setTraceId(joinPoint);
-			this.printMessageBrokerLog(type, target, this.getInput(joinPoint));
-			return joinPoint.proceed();
-		} catch (Exception e) {
-			this.printErrorLog(e);
-			throw e;
-		}
-	}
-
 	private Object jobLogAdviceLog(ProceedingJoinPoint joinPoint, String jobName) throws Throwable {
 		Object returnValue = null;
 		try {
 			logFormatFactory.startTrace();
-			this.printJobLog(jobName, this.getInput(joinPoint), JobActionType.JOB_START);
+			logPrinter.printJobLog(jobName, this.getInput(joinPoint), JobActionType.JOB_START);
 			returnValue = joinPoint.proceed();
 		} catch (Exception e) {
-			this.printErrorLog(e);
+			logPrinter.printErrorLog(e);
 		}
-		this.printJobLog(jobName, this.getInput(joinPoint), JobActionType.JOB_FINISH);
+		logPrinter.printJobLog(jobName, this.getInput(joinPoint), JobActionType.JOB_FINISH);
 		return returnValue;
 	}
 
-	private void setTraceId(ProceedingJoinPoint joinPoint){
+	private void setTraceId(ProceedingJoinPoint joinPoint) {
 		Object[] args = joinPoint.getArgs();
-		for (Object arg : args){
-			if (arg instanceof MessageWrapperDto<?> dto){
+		for (Object arg : args) {
+			if (arg instanceof MessageWrapperDto<?> dto) {
 				logFormatFactory.startTrace(dto.getTraceId());
 				break;
 			}
@@ -109,40 +108,6 @@ public class LogAspect {
 		} catch (JsonProcessingException e) {
 			return value.toString();
 		}
-	}
-
-	private void printErrorLog(Exception e) {
-		String message = e.getMessage();
-		if (e instanceof CustomException ce){
-			message = ce.getErrorCode().getMessage();
-		}
-		StackTraceElement stackTraceElement = e.getStackTrace()[0];
-		logPrinter.print(logFormatFactory.getErrorLogFormatBuilder()
-			.className(stackTraceElement.getClassName())
-			.methodName(stackTraceElement.getMethodName())
-			.exceptionName(e.getClass().getName())
-			.message(message)
-			.build());
-	}
-
-	private void printJobLog(String jobName, String input, JobActionType action) {
-		JobLogFormatDtoBuilder jobLogFormatDtoBuilder = logFormatFactory.getJobLogFormatBuilder()
-			.jobName(jobName)
-			.input(input)
-			.action(action);
-
-		logPrinter.print(jobLogFormatDtoBuilder.build());
-	}
-
-	private void printMessageBrokerLog(TargetType type, String target, String input) {
-		String targetName = (String)expressionBeanParser.parse(target);
-		MessageBrokerLogFormatDtoBuilder logFormatDtoBuilder = logFormatFactory.getMessageBrokerLogFormatBuilder()
-			.type(type)
-			.exchangeName(type == TargetType.PRODUCER ? targetName : null)
-			.queueName(type == TargetType.CONSUMER ? targetName : null)
-			.input(input);
-
-		logPrinter.print(logFormatDtoBuilder.build());
 	}
 
 }
