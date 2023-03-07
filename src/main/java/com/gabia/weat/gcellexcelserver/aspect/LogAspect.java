@@ -56,8 +56,8 @@ public class LogAspect {
 			return joinPoint.proceed();
 		} catch (Exception e) {
 			this.printErrorLog(e);
+			throw e;
 		}
-		return null;
 	}
 
 	private Object jobLogAdviceLog(ProceedingJoinPoint joinPoint, String jobName) throws Throwable {
@@ -74,7 +74,6 @@ public class LogAspect {
 	}
 
 	private void setTraceId(ProceedingJoinPoint joinPoint){
-
 		Object[] args = joinPoint.getArgs();
 		for (Object arg : args){
 			if (arg instanceof MessageWrapperDto<?> dto){

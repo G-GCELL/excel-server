@@ -11,9 +11,6 @@ import com.rabbitmq.client.Channel;
 
 public interface Consumer<T> {
 
-	void receiveMessage(MessageWrapperDto<T> fileCreateRequestDto, Channel channel,
-		@Header(AmqpHeaders.DELIVERY_TAG) long tag) throws
-		IOException,
-		SQLException;
+	void receiveMessage(MessageWrapperDto<T> message) throws Exception;
 
 }
