@@ -22,11 +22,6 @@ spring:
         default_batch_fetch_size: ${FETCH_SIZE}
     open-in-view: false
 
-  task:
-    scheduling:
-      pool:
-        size: 2
-
 minio:
   bucket:
     excel: ${MINIO_BUCKET_EXCEL}
