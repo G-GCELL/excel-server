@@ -28,7 +28,6 @@ import lombok.RequiredArgsConstructor;
 @Service
 @Validated
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class ExcelDataService {
 
 	private final CsvParser csvParser;
@@ -45,6 +44,7 @@ public class ExcelDataService {
 		csvParser.insertWithCsv(backupFile, dto.deleteTarget());
 	}
 
+	@Transactional(readOnly = true)
 	public void createExcelFile(@Valid MessageWrapperDto<FileCreateRequestMsgDto> messageWrapperDto) throws SQLException {
 		FileCreateRequestMsgDto dto = messageWrapperDto.getMessage();
 		ResultSetDto result = excelDataJdbcRepository.getResultSet(dto);

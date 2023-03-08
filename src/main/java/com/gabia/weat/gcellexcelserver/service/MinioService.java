@@ -48,13 +48,12 @@ public class MinioService {
 				GetObjectArgs.builder()
 					.bucket(csvBucketName).object(srcFileName).build()
 			).transferTo(fileOutputStream);
-			fileOutputStream.close();
 			minioClient.removeObject(
 				RemoveObjectArgs.builder()
 					.bucket(csvBucketName).object(srcFileName).build()
 			);
 		} catch (Exception exception) {
-			throw new CustomException(exception, ErrorCode.MINIO_UPLOAD_FAIL);
+			throw new CustomException(exception, ErrorCode.MINIO_DOWNLOAD_FAIL);
 		}
 	}
 

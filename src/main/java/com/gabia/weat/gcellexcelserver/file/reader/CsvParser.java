@@ -40,9 +40,8 @@ public class CsvParser {
 		TransactionSynchronizationManager.initSynchronization();
 		Connection connection = DataSourceUtils.getConnection(dataSource);
 
+		connection.setAutoCommit(false);
 		try (FileInputStream fileInputStream = new FileInputStream(csvFile)) {
-			connection.setAutoCommit(false);
-
 			excelDataJdbcRepository.deleteWithYearMonth(deleteTarget);
 
 			InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8");
@@ -62,6 +61,7 @@ public class CsvParser {
 			excelDataJdbcRepository.optimization();
 			connection.commit();
 		} catch (Exception exception) {
+			csvFile.delete();
 			connection.rollback();
 			throw exception;
 		} finally {
