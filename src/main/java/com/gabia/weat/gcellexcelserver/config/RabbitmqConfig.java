@@ -131,6 +131,7 @@ public class RabbitmqConfig {
 	RabbitTemplate csvUpdateRequestRabbitTemplate() {
 		RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory());
 		rabbitTemplate.setExchange(property.getExchange().getDirectExchange());
+		rabbitTemplate.setRoutingKey(property.getRoutingKey().getCsvUpdateRequestRoutingKey());
 		rabbitTemplate.setMessageConverter(messageConverter());
 		return rabbitTemplate;
 	}
