@@ -9,9 +9,7 @@ import com.gabia.weat.gcellexcelserver.dto.MessageWrapperDto;
 import com.gabia.weat.gcellexcelserver.service.ExcelDataService;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FileCreateRequestConsumer implements Consumer<FileCreateRequestMsgDto> {

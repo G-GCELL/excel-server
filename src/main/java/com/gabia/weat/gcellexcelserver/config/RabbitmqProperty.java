@@ -31,6 +31,7 @@ public class RabbitmqProperty {
 	@AllArgsConstructor
 	public static class QueueProperty {
 		private String fileCreateRequestQueue;
+		private String csvUpdateRequestQueue;
 	}
 
 	@Getter
@@ -45,6 +46,7 @@ public class RabbitmqProperty {
 	@AllArgsConstructor
 	public static class RoutingKeyProperty {
 		private String fileCreateRequestRoutingKey;
+		private String csvUpdateRequestRoutingKey;
 	}
 
 }

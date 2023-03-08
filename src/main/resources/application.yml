@@ -29,7 +29,8 @@ spring:
 
 minio:
   bucket:
-    name: ${MINIO_BUCKET_NAME}
+    excel: ${MINIO_BUCKET_EXCEL}
+    csv: ${MINIO_BUCKET_CSV}
   access:
     key: ${MINIO_KEY}
     secret: ${MINIO_PASSWORD}
@@ -46,12 +47,14 @@ rabbitmq:
     file-create-error-exchange: ${FILE_CREATE_ERROR_EXCHANGE}
   queue:
     file-create-request-queue: ${FILE_CREATE_REQUEST_QUEUE}
+    csv-update-request-queue: ${CSV_UPDATE_REQUEST_QUEUE}
   listener:
     concurrency: ${LISTENER_CONCURRENCY}
     max-concurrency: ${LISTENER_MAX_CONCURRENCY}
     prefetch: ${LISTENER_PREFETCH}
   routing-key:
     file-create-request-routing-key: ${FILE_CREATE_REQUEST_ROUTING_KEY}
+    csv-update-request-routing-key: ${CSV_UPDATE_REQUEST_ROUTING_KEY}
 
 management:
   endpoint:
