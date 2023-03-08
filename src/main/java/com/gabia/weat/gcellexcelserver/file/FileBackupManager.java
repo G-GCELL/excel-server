@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 public class FileBackupManager {
 
 	private final MinioService minioService;
+	private final String DATA_FILE_DIRECTORY = "data" + File.separator + "manual";
 
 	public File backup(String fileLocate, JobType jobType) throws IOException {
 		return switch (jobType) {
@@ -26,10 +27,10 @@ public class FileBackupManager {
 		};
 	}
 
-	private File backupWithMinio(String fileLocate) {
-		File file = new File(getDateDirectoryPath(LocalDate.now()) + File.separator + fileLocate);
-		minioService.moveFile(fileLocate, file);
-		return file;
+	private File backupWithMinio(String fileLocate) throws IOException {
+		String filePath = DATA_FILE_DIRECTORY + File.separator + fileLocate;
+		minioService.moveFile(fileLocate, new File(filePath));
+		return backupWithLocal(filePath);
 	}
 
 	private File backupWithLocal(String fileLocate) throws IOException {

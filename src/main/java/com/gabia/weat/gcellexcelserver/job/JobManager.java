@@ -25,7 +25,7 @@ public class JobManager {
 	private final LogFormatFactory logFormatFactory;
 	private final CsvUpdateRequestProducer csvUpdateRequestProducer;
 	private final String ADD_JOB_LOCK_NAME = "add";
-	private final String DATA_FILE_DIRECTORY = "data";
+	private final String DATA_FILE_DIRECTORY = "data" + File.separator + "auto";
 
 	@Scheduled(cron = "0 0 0 * * ?")
 	public void addJobAutoTrigger() {
