@@ -1,4 +1,4 @@
-package com.gabia.weat.gcellexcelserver.job.data;
+package com.gabia.weat.gcellexcelserver.job;
 
 import java.io.File;
 import java.text.SimpleDateFormat;

@@ -8,7 +8,6 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.ArrayList;
@@ -17,13 +16,10 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import com.gabia.weat.gcellexcelserver.annotation.JobLog;
 import com.gabia.weat.gcellexcelserver.domain.ExcelData;
 import com.gabia.weat.gcellexcelserver.error.ErrorCode;
 import com.gabia.weat.gcellexcelserver.repository.ExcelDataJdbcRepository;
@@ -39,14 +35,12 @@ public class CsvParser {
 	private final String[] HEADERS_ORDER_RULE = {"account_id", "usage_date", "product_code", "cost"};
 	private final DataSource dataSource;
 
-	@JobLog(jobName = "Single Update Job")
-	public void insertWithCsv(String csvFilePath, YearMonth deleteTarget)
+	public void insertWithCsv(File csvFile, YearMonth deleteTarget)
 		throws SQLException, IOException {
-		File copied = copyOriginCsv(csvFilePath);
 		TransactionSynchronizationManager.initSynchronization();
 		Connection connection = DataSourceUtils.getConnection(dataSource);
 
-		try (FileInputStream fileInputStream = new FileInputStream(copied)) {
+		try (FileInputStream fileInputStream = new FileInputStream(csvFile)) {
 			connection.setAutoCommit(false);
 
 			excelDataJdbcRepository.deleteWithYearMonth(deleteTarget);
@@ -68,7 +62,6 @@ public class CsvParser {
 			excelDataJdbcRepository.optimization();
 			connection.commit();
 		} catch (Exception exception) {
-			copied.delete();
 			connection.rollback();
 			throw exception;
 		} finally {
@@ -76,21 +69,6 @@ public class CsvParser {
 			TransactionSynchronizationManager.unbindResource(dataSource);
 			TransactionSynchronizationManager.clearSynchronization();
 		}
-	}
-
-	private File copyOriginCsv(String csvFilePath) throws IOException {
-		File srcFile = new File(csvFilePath);
-		File destFile = new File(getDateDirectoryPath(LocalDate.now()) + File.separator + getFileName(csvFilePath));
-		FileUtils.copyFile(srcFile, destFile);
-		return destFile;
-	}
-
-	private String getDateDirectoryPath(LocalDate time) {
-		return time.toString().replace("-", File.separator);
-	}
-
-	private String getFileName(String filePath) {
-		return FilenameUtils.getBaseName(filePath) + FilenameUtils.getExtension(filePath);
 	}
 
 	private void skipHeader(BufferedReader bufferedReader) throws IOException {
