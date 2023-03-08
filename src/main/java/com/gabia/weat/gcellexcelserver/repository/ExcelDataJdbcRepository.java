@@ -25,6 +25,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import com.gabia.weat.gcellexcelserver.domain.ExcelData;
@@ -72,6 +73,12 @@ public class ExcelDataJdbcRepository {
 			23, 59, 59);
 		String sql = "delete from excel_data where start_date between ? and ?";
 		jdbcTemplate.update(sql, from, to);
+	}
+
+	public void optimization() {
+		jdbcTemplate.update("set GLOBAL innodb_optimize_fulltext_only=ON");
+		jdbcTemplate.query("optimize table excel_data", (RowMapper<String>)(rs, rowNum) -> null);
+		jdbcTemplate.update("set GLOBAL innodb_optimize_fulltext_only=OFF");
 	}
 
 	public ResultSetDto getResultSet(FileCreateRequestMsgDto dto) throws SQLException {

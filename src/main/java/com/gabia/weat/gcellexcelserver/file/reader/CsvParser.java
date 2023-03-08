@@ -65,6 +65,7 @@ public class CsvParser {
 				}
 			}
 			excelDataJdbcRepository.insertExcelDataList(excelDataList);
+			excelDataJdbcRepository.optimization();
 			connection.commit();
 		} catch (Exception exception) {
 			copied.delete();

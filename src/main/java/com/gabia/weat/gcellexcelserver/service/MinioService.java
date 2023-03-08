@@ -32,8 +32,9 @@ public class MinioService {
 			);
 		} catch (Exception exception) {
 			throw new CustomException(exception, ErrorCode.MINIO_UPLOAD_FAIL);
+		} finally {
+			file.delete();
 		}
-		file.delete();
 	}
 
 }
