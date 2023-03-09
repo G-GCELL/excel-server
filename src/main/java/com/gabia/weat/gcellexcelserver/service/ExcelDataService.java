@@ -12,7 +12,6 @@ import com.gabia.weat.gcellexcelserver.dto.MessageDto.CsvUpdateRequestDto;
 import com.gabia.weat.gcellexcelserver.dto.MessageDto.FileCreateRequestMsgDto;
 import com.gabia.weat.gcellexcelserver.dto.MessageWrapperDto;
 import com.gabia.weat.gcellexcelserver.dto.MessageMetaDto;
-import com.gabia.weat.gcellexcelserver.file.FileBackupManager;
 import com.gabia.weat.gcellexcelserver.file.reader.CsvParser;
 import com.gabia.weat.gcellexcelserver.file.writer.ExcelWriter;
 
@@ -34,7 +33,6 @@ public class ExcelDataService {
 	private final CsvParser csvParser;
 	private final ExcelWriter excelWriter;
 	private final MinioService minioService;
-	private final FileBackupManager fileBackupManager;
 	private final ExcelDataJdbcRepository excelDataJdbcRepository;
 	private final FileCreateProgressProducer fileCreateProgressProducer;
 
@@ -42,8 +40,8 @@ public class ExcelDataService {
 	public void updateExcelData(@Valid MessageWrapperDto<CsvUpdateRequestDto> messageWrapperDto)
 		throws SQLException, IOException {
 		CsvUpdateRequestDto dto = messageWrapperDto.getMessage();
-		File backupFile = fileBackupManager.backup(dto.fileLocate(), dto.jobType());
-		csvParser.insertWithCsv(backupFile, dto.deleteTarget());
+		File csvFile = minioService.downloadFile(dto.fileLocate());
+		csvParser.insertWithCsv(csvFile, dto.deleteTarget());
 	}
 
 	@TimerLog
