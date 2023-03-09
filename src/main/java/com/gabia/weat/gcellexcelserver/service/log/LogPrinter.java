@@ -6,6 +6,7 @@ import com.gabia.weat.gcellexcelserver.domain.type.TargetType;
 import com.gabia.weat.gcellexcelserver.dto.log.LogFormatDto;
 import com.gabia.weat.gcellexcelserver.dto.log.LogFormatFactory;
 import com.gabia.weat.gcellexcelserver.dto.log.MessageBrokerLogFormatDto;
+import com.gabia.weat.gcellexcelserver.dto.log.TimerLogFormatDto;
 import com.gabia.weat.gcellexcelserver.error.exception.CustomException;
 import com.gabia.weat.gcellexcelserver.parser.CustomExpressionParser;
 
@@ -44,6 +45,17 @@ public abstract class LogPrinter {
 			.input(input);
 
 		this.print(logFormatDtoBuilder.build());
+	}
+
+	public void printTimerLog(String methodName, String input, boolean isStart, long time){
+		TimerLogFormatDto timerLogFormatDto = logFormatFactory.getTimerLogFormatBuilder()
+			.methodName(methodName)
+			.input(input)
+			.isStart(isStart)
+			.time(time)
+			.build();
+
+		this.print(timerLogFormatDto);
 	}
 
 }

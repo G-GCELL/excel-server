@@ -52,6 +52,17 @@ public class LogAspect {
 		}
 	}
 
+	@Around("@annotation(com.gabia.weat.gcellexcelserver.annotation.TimerLog)")
+	public Object timerLogAdvisor(ProceedingJoinPoint joinPoint) throws Throwable {
+		String methodName = joinPoint.getSignature().getName();
+		String input = this.getInput(joinPoint);
+		long startTime = System.currentTimeMillis();
+		logPrinter.printTimerLog(methodName, input, true, 0);
+		Object result = joinPoint.proceed();
+		logPrinter.printTimerLog(methodName, input, false, System.currentTimeMillis() - startTime);
+		return result;
+	}
+
 	private void setTraceId(ProceedingJoinPoint joinPoint) {
 		Object[] args = joinPoint.getArgs();
 		for (Object arg : args) {
