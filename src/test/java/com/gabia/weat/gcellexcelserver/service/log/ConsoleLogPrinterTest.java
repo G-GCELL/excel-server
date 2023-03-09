@@ -3,7 +3,6 @@ package com.gabia.weat.gcellexcelserver.service.log;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,10 +13,8 @@ import org.slf4j.event.Level;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 
-import com.gabia.weat.gcellexcelserver.domain.type.JobActionType;
 import com.gabia.weat.gcellexcelserver.domain.type.TargetType;
 import com.gabia.weat.gcellexcelserver.dto.log.ErrorLogFormatDto;
-import com.gabia.weat.gcellexcelserver.dto.log.JobLogFormatDto;
 import com.gabia.weat.gcellexcelserver.dto.log.LogFormatFactory;
 import com.gabia.weat.gcellexcelserver.dto.log.MessageBrokerLogFormatDto;
 import com.gabia.weat.gcellexcelserver.parser.CustomExpressionParser;
@@ -60,19 +57,6 @@ public class ConsoleLogPrinterTest {
 		assertThat(output.getOut().contains("(testQueue)")).isTrue();
 	}
 
-	@Test
-	@DisplayName("에러_로그_테스트")
-	public void printJobLog_test(CapturedOutput output){
-		// given
-		given(logFormatFactory.getJobLogFormatBuilder()).willReturn(this.getJobLogFormatBuilder());
-
-		// when
-		logPrinter.printJobLog("testJob", "testInput", JobActionType.JOB_START);
-
-		// then
-		assertThat(output.getOut().contains("testJob")).isTrue();
-	}
-
 	private ErrorLogFormatDto.ErrorLogFormatDtoBuilder getErrorLogFormatBuilder() {
 		return ErrorLogFormatDto.builder()
 			.level(Level.ERROR)
@@ -82,13 +66,6 @@ public class ConsoleLogPrinterTest {
 
 	private MessageBrokerLogFormatDto.MessageBrokerLogFormatDtoBuilder getMessageBrokerLogFormatBuilder() {
 		return MessageBrokerLogFormatDto.builder()
-			.level(Level.INFO)
-			.serverName("serverName")
-			.traceId("testTraceId");
-	}
-
-	private JobLogFormatDto.JobLogFormatDtoBuilder getJobLogFormatBuilder() {
-		return JobLogFormatDto.builder()
 			.level(Level.INFO)
 			.serverName("serverName")
 			.traceId("testTraceId");

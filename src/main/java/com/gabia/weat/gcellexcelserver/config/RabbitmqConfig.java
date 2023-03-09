@@ -1,5 +1,8 @@
 package com.gabia.weat.gcellexcelserver.config;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Declarables;
@@ -23,9 +26,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.gabia.weat.gcellexcelserver.error.CustomRejectingErrorHandler;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @EnableRabbit
 @Configuration
 @RequiredArgsConstructor
@@ -68,11 +69,21 @@ public class RabbitmqConfig {
 	}
 
 	@Bean
+	Queue csvUpdateRequestQueue() {
+		Map<String, Object> arguments = new HashMap<String, Object>();
+		arguments.put("x-single-active-consumer", true);
+		return new Queue(property.getQueue().getCsvUpdateRequestQueue(), true, false, false, arguments);
+	}
+
+	@Bean
 	Declarables directExchangeBindings() {
 		return new Declarables(
 			BindingBuilder.bind(fileCreateRequestQueue())
 				.to(directExchange())
-				.with(property.getRoutingKey().getFileCreateRequestRoutingKey())
+				.with(property.getRoutingKey().getFileCreateRequestRoutingKey()),
+			BindingBuilder.bind(csvUpdateRequestQueue())
+				.to(directExchange())
+				.with(property.getRoutingKey().getCsvUpdateRequestRoutingKey())
 		);
 	}
 
@@ -82,7 +93,8 @@ public class RabbitmqConfig {
 		listenerContainerFactory.setConnectionFactory(connectionFactory());
 		listenerContainerFactory.setMessageConverter(messageConverter());
 		listenerContainerFactory.setContainerCustomizer(
-			container -> container.setQueueNames(property.getQueue().getFileCreateRequestQueue()));
+			container -> container.setQueueNames(property.getQueue().getFileCreateRequestQueue())
+		);
 		listenerContainerFactory.setConcurrentConsumers(property.getListener().getConcurrency());
 		listenerContainerFactory.setMaxConcurrentConsumers(property.getListener().getMaxConcurrency());
 		listenerContainerFactory.setPrefetchCount(property.getListener().getPrefetch());
@@ -93,9 +105,33 @@ public class RabbitmqConfig {
 	}
 
 	@Bean
+	SimpleRabbitListenerContainerFactory csvUpdateRequestListenerFactory() {
+		SimpleRabbitListenerContainerFactory listenerContainerFactory = new SimpleRabbitListenerContainerFactory();
+		listenerContainerFactory.setConnectionFactory(connectionFactory());
+		listenerContainerFactory.setMessageConverter(messageConverter());
+		listenerContainerFactory.setContainerCustomizer(
+			container -> container.setQueueNames(property.getQueue().getCsvUpdateRequestQueue())
+		);
+		listenerContainerFactory.setPrefetchCount(1);
+		listenerContainerFactory.setAcknowledgeMode(AcknowledgeMode.AUTO);
+		listenerContainerFactory.setErrorHandler(errorHandler);
+		listenerContainerFactory.setDefaultRequeueRejected(false);
+		return listenerContainerFactory;
+	}
+
+	@Bean
 	RabbitTemplate fileCreateProgressRabbitTemplate() {
 		RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory());
 		rabbitTemplate.setExchange(property.getExchange().getFileCreateProgressExchange());
+		rabbitTemplate.setMessageConverter(messageConverter());
+		return rabbitTemplate;
+	}
+
+	@Bean
+	RabbitTemplate csvUpdateRequestRabbitTemplate() {
+		RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory());
+		rabbitTemplate.setExchange(property.getExchange().getDirectExchange());
+		rabbitTemplate.setRoutingKey(property.getRoutingKey().getCsvUpdateRequestRoutingKey());
 		rabbitTemplate.setMessageConverter(messageConverter());
 		return rabbitTemplate;
 	}

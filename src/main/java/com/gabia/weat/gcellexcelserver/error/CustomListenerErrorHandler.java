@@ -43,7 +43,6 @@ public class CustomListenerErrorHandler implements RabbitListenerErrorHandler {
 					errorCode.getCustomStatus().getCode()),
 				messageWrapperDto.getTraceId())
 		);
-
 		throw new CustomException(t, errorCode);
 	}
 

@@ -1,9 +1,7 @@
 package com.gabia.weat.gcellexcelserver.aspect;
 
 import com.gabia.weat.gcellexcelserver.annotation.ConsumerLog;
-import com.gabia.weat.gcellexcelserver.annotation.JobLog;
 import com.gabia.weat.gcellexcelserver.annotation.ProducerLog;
-import com.gabia.weat.gcellexcelserver.domain.type.JobActionType;
 import com.gabia.weat.gcellexcelserver.domain.type.TargetType;
 import com.gabia.weat.gcellexcelserver.dto.MessageWrapperDto;
 import com.gabia.weat.gcellexcelserver.dto.log.LogFormatFactory;
@@ -52,24 +50,6 @@ public class LogAspect {
 				exception
 			);
 		}
-	}
-
-	@Around("@annotation(jobLog)")
-	public Object jobLogAdvisor(ProceedingJoinPoint joinPoint, JobLog jobLog) throws Throwable {
-		return this.jobLogAdviceLog(joinPoint, jobLog.jobName());
-	}
-
-	private Object jobLogAdviceLog(ProceedingJoinPoint joinPoint, String jobName) throws Throwable {
-		Object returnValue = null;
-		try {
-			logFormatFactory.startTrace();
-			logPrinter.printJobLog(jobName, this.getInput(joinPoint), JobActionType.JOB_START);
-			returnValue = joinPoint.proceed();
-		} catch (Exception e) {
-			logPrinter.printErrorLog(e);
-		}
-		logPrinter.printJobLog(jobName, this.getInput(joinPoint), JobActionType.JOB_FINISH);
-		return returnValue;
 	}
 
 	private void setTraceId(ProceedingJoinPoint joinPoint) {

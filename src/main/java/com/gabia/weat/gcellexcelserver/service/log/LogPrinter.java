@@ -2,9 +2,7 @@ package com.gabia.weat.gcellexcelserver.service.log;
 
 import org.slf4j.event.Level;
 
-import com.gabia.weat.gcellexcelserver.domain.type.JobActionType;
 import com.gabia.weat.gcellexcelserver.domain.type.TargetType;
-import com.gabia.weat.gcellexcelserver.dto.log.JobLogFormatDto;
 import com.gabia.weat.gcellexcelserver.dto.log.LogFormatDto;
 import com.gabia.weat.gcellexcelserver.dto.log.LogFormatFactory;
 import com.gabia.weat.gcellexcelserver.dto.log.MessageBrokerLogFormatDto;
@@ -33,15 +31,6 @@ public abstract class LogPrinter {
 			.exceptionName(e.getClass().getName())
 			.message(message)
 			.build());
-	}
-
-	public void printJobLog(String jobName, String input, JobActionType action) {
-		JobLogFormatDto.JobLogFormatDtoBuilder jobLogFormatDtoBuilder = logFormatFactory.getJobLogFormatBuilder()
-			.jobName(jobName)
-			.input(input)
-			.action(action);
-
-		this.print(jobLogFormatDtoBuilder.build());
 	}
 
 	public void printMessageBrokerLog(TargetType type, String target, String input, Exception exception) {
