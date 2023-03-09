@@ -96,8 +96,7 @@ jacocoTestReport {
 					"**/annotation/**",
 					"**/aspect/**",
 					"**/error/**",
-					"**/converter/**",
-					"**/job/**"
+					"**/converter/**"
 			])
 		}))
 	}
@@ -128,8 +127,7 @@ jacocoTestCoverageVerification {
 					"*.annotation.*",
 					"*.aspect.*",
 					"*.error.*",
-					"*.converter.*",
-					"*.job.*"
+					"*.converter.*"
 			]
 		}
 	}

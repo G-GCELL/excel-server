@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 public class CsvUpdateRequestConsumer implements Consumer<CsvUpdateRequestDto> {
 
 	private final ExcelDataService excelDataService;
+
 	@Override
 	@ConsumerLog(queue = "${rabbitmq.queue.csv-update-request-queue}")
 	@RabbitListener(containerFactory = "csvUpdateRequestListenerFactory")
