@@ -63,13 +63,13 @@ public class CsvParser {
 			excelDataJdbcRepository.optimization();
 			connection.commit();
 		} catch (Exception exception) {
-			csvFile.delete();
 			connection.rollback();
 			throw exception;
 		} finally {
 			DataSourceUtils.releaseConnection(connection, dataSource);
 			TransactionSynchronizationManager.unbindResource(dataSource);
 			TransactionSynchronizationManager.clearSynchronization();
+			csvFile.delete();
 		}
 	}
 

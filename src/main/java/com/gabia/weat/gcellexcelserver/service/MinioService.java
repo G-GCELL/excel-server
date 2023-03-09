@@ -14,7 +14,6 @@ import com.gabia.weat.gcellexcelserver.error.exception.CustomException;
 import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
-import io.minio.RemoveObjectArgs;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -44,19 +43,17 @@ public class MinioService {
 		}
 	}
 
-	public void moveFile(String srcFileName, File destFile) {
-		try (FileOutputStream fileOutputStream = new FileOutputStream(destFile)) {
+	public File downloadFile(String srcFileName) {
+		File file = new File(srcFileName);
+		try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
 			minioClient.getObject(
 				GetObjectArgs.builder()
 					.bucket(csvBucketName).object(srcFileName).build()
 			).transferTo(fileOutputStream);
-			minioClient.removeObject(
-				RemoveObjectArgs.builder()
-					.bucket(csvBucketName).object(srcFileName).build()
-			);
 		} catch (Exception exception) {
 			throw new CustomException(exception, ErrorCode.MINIO_DOWNLOAD_FAIL);
 		}
+		return file;
 	}
 
 }

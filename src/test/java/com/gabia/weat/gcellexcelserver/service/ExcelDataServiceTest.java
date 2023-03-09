@@ -2,12 +2,10 @@ package com.gabia.weat.gcellexcelserver.service;
 
 import static org.mockito.BDDMockito.*;
 
-import com.gabia.weat.gcellexcelserver.domain.type.JobType;
 import com.gabia.weat.gcellexcelserver.dto.JdbcDto.ResultSetDto;
 import com.gabia.weat.gcellexcelserver.dto.MessageDto;
 import com.gabia.weat.gcellexcelserver.dto.MessageDto.FileCreateRequestMsgDto;
 import com.gabia.weat.gcellexcelserver.dto.MessageWrapperDto;
-import com.gabia.weat.gcellexcelserver.file.FileBackupManager;
 import com.gabia.weat.gcellexcelserver.file.reader.CsvParser;
 import com.gabia.weat.gcellexcelserver.file.writer.ExcelWriter;
 import com.gabia.weat.gcellexcelserver.repository.ExcelDataJdbcRepository;
@@ -35,8 +33,6 @@ class ExcelDataServiceTest {
 	@Mock
 	private FileCreateProgressProducer fileCreateProgressProducer;
 	@Mock
-	private FileBackupManager fileBackupManager;
-	@Mock
 	private CsvParser csvParser;
 	@InjectMocks
 	private ExcelDataService excelDataService;
@@ -47,14 +43,13 @@ class ExcelDataServiceTest {
 		// given
 		String traceId = "testid";
 		MessageWrapperDto<MessageDto.CsvUpdateRequestDto> messageWrapperDto = MessageWrapperDto.wrapMessageDto(
-			new MessageDto.CsvUpdateRequestDto("data/202202.csv", null, JobType.AUTO), traceId
+			new MessageDto.CsvUpdateRequestDto("data/202202.csv", null), traceId
 		);
 
 		// when
 		excelDataService.updateExcelData(messageWrapperDto);
 
 		// then
-		verify(fileBackupManager, times(1)).backup("data/202202.csv", JobType.AUTO);
 		verify(csvParser, times(1)).insertWithCsv(null, null);
 	}
 

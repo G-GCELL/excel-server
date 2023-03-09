@@ -11,7 +11,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.gabia.weat.gcellexcelserver.domain.type.JobType;
 import com.gabia.weat.gcellexcelserver.dto.MessageDto.CsvUpdateRequestDto;
 import com.gabia.weat.gcellexcelserver.dto.MessageWrapperDto;
 import com.gabia.weat.gcellexcelserver.service.ExcelDataService;
@@ -30,7 +29,7 @@ class CsvUpdateRequestConsumerTest {
 		// given
 		String traceId = "testid";
 		MessageWrapperDto<CsvUpdateRequestDto> messageWrapperDto = MessageWrapperDto.wrapMessageDto(
-			new CsvUpdateRequestDto("data/202202.csv", null, JobType.AUTO), traceId
+			new CsvUpdateRequestDto("data/202202.csv", null), traceId
 		);
 
 		// when & then

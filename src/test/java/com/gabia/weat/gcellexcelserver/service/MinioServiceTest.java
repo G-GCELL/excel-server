@@ -46,17 +46,15 @@ class MinioServiceTest {
 	}
 
 	@Test
-	@DisplayName("미니오 서비스를 통해 목적 파일로 미니오 파일을 이동시킬 수 있다.")
+	@DisplayName("미니오 서비스를 통해 다운로드를 수행할 수 있다.")
 	void moveFileFromMinio() throws Exception {
 		// given
 		GetObjectResponse getObjectResponse = mock(GetObjectResponse.class);
-		Iterable iterable = mock(Iterable.class);
 		given(minioClient.getObject(any())).willReturn(getObjectResponse);
 		ReflectionTestUtils.setField(minioService, "csvBucketName", "test");
 
 		// when
-		File file = new File("foo.csv");
-		minioService.moveFile("foo.csv", file);
+		File file = minioService.downloadFile("foo.csv");
 
 		// then
 		then(minioClient).should().getObject(any());
