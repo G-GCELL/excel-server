@@ -75,7 +75,7 @@ deploy:
   script:
     - docker ps -a
     - docker-compose -f $EXCEL_DOCKER_COMPOSE down
-    - docker-compose -f $EXCEL_DOCKER_COMPOSE up -d --scale $SCALE_OPTION
+    - docker-compose -f $EXCEL_DOCKER_COMPOSE up -d $SCALE_OPTION
     - docker ps -a
   after_script:
     - docker logout
