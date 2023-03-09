@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-import com.gabia.weat.gcellexcelserver.domain.type.JobType;
 import com.gabia.weat.gcellexcelserver.domain.type.MessageType;
 
 import jakarta.validation.constraints.NotBlank;
@@ -71,8 +70,7 @@ public class MessageDto {
 	public record CsvUpdateRequestDto(
 		@NotBlank
 		String fileLocate,
-		YearMonth deleteTarget,
-		JobType jobType
+		YearMonth deleteTarget
 	) {
 	}
 
