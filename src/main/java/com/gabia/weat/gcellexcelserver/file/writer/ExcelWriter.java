@@ -1,5 +1,6 @@
 package com.gabia.weat.gcellexcelserver.file.writer;
 
+import com.gabia.weat.gcellexcelserver.annotation.TimerLog;
 import com.gabia.weat.gcellexcelserver.converter.MessageMetaDtoConverter;
 import com.gabia.weat.gcellexcelserver.dto.JdbcDto.ResultSetDto;
 import com.gabia.weat.gcellexcelserver.dto.MessageWrapperDto;
@@ -29,6 +30,7 @@ public class ExcelWriter {
     private final int FLUSH_UNIT = 100;
     private final FileCreateProgressProducer fileCreateProgressProducer;
 
+    @TimerLog
     public File writeWithProgress(ResultSetDto resultSetDto, String fileName, MessageMetaDto dto) {
         validateResult(resultSetDto);
         File file = new File(fileName);

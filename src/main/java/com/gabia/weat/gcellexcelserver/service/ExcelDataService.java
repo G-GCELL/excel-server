@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import com.gabia.weat.gcellexcelserver.annotation.TimerLog;
 import com.gabia.weat.gcellexcelserver.converter.MessageDtoConverter;
 import com.gabia.weat.gcellexcelserver.converter.MessageMetaDtoConverter;
 import com.gabia.weat.gcellexcelserver.dto.JdbcDto.ResultSetDto;
@@ -37,6 +38,7 @@ public class ExcelDataService {
 	private final ExcelDataJdbcRepository excelDataJdbcRepository;
 	private final FileCreateProgressProducer fileCreateProgressProducer;
 
+	@TimerLog
 	public void updateExcelData(@Valid MessageWrapperDto<CsvUpdateRequestDto> messageWrapperDto)
 		throws SQLException, IOException {
 		CsvUpdateRequestDto dto = messageWrapperDto.getMessage();
@@ -44,6 +46,7 @@ public class ExcelDataService {
 		csvParser.insertWithCsv(backupFile, dto.deleteTarget());
 	}
 
+	@TimerLog
 	@Transactional(readOnly = true)
 	public void createExcelFile(@Valid MessageWrapperDto<FileCreateRequestMsgDto> messageWrapperDto) throws SQLException {
 		FileCreateRequestMsgDto dto = messageWrapperDto.getMessage();

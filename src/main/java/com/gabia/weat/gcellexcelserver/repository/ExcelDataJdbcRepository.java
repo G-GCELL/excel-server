@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import com.gabia.weat.gcellexcelserver.annotation.TimerLog;
 import com.gabia.weat.gcellexcelserver.dto.JdbcDto.QuerySetDto;
 import com.gabia.weat.gcellexcelserver.dto.JdbcDto.ResultSetDto;
 import com.gabia.weat.gcellexcelserver.dto.MessageDto.FileCreateRequestMsgDto;
@@ -81,6 +82,7 @@ public class ExcelDataJdbcRepository {
 		jdbcTemplate.update("set GLOBAL innodb_optimize_fulltext_only=OFF");
 	}
 
+	@TimerLog
 	public ResultSetDto getResultSet(FileCreateRequestMsgDto dto) throws SQLException {
 		Connection conn = getConnection();
 		validateColumnNames(dto.columnNames(), conn);

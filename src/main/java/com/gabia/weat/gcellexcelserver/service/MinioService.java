@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.gabia.weat.gcellexcelserver.annotation.TimerLog;
 import com.gabia.weat.gcellexcelserver.error.ErrorCode;
 import com.gabia.weat.gcellexcelserver.error.exception.CustomException;
 
@@ -27,6 +28,7 @@ public class MinioService {
 	@Value("${minio.bucket.csv}")
 	private String csvBucketName;
 
+	@TimerLog
 	public void uploadFileWithDelete(File file, String fileName) {
 		try (FileInputStream fileInputStream = new FileInputStream(file)) {
 			minioClient.putObject(PutObjectArgs.builder()
