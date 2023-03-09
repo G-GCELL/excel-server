@@ -128,15 +128,6 @@ public class RabbitmqConfig {
 	}
 
 	@Bean
-	RabbitTemplate csvUpdateRequestRabbitTemplate() {
-		RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory());
-		rabbitTemplate.setExchange(property.getExchange().getDirectExchange());
-		rabbitTemplate.setRoutingKey(property.getRoutingKey().getCsvUpdateRequestRoutingKey());
-		rabbitTemplate.setMessageConverter(messageConverter());
-		return rabbitTemplate;
-	}
-
-	@Bean
 	RabbitTemplate fileCreateErrorRabbitTemplate() {
 		RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory());
 		rabbitTemplate.setExchange(property.getExchange().getFileCreateErrorExchange());
