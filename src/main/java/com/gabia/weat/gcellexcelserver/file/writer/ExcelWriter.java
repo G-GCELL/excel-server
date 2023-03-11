@@ -26,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ExcelWriter {
 
+    private final int MAX_RESULT_COUNT = 1_500_000;
     private final int MAX_ROWS = 1_048_576;
     private final int FLUSH_UNIT = 100;
     private final FileCreateProgressProducer fileCreateProgressProducer;
@@ -34,35 +35,39 @@ public class ExcelWriter {
     public File writeWithProgress(ResultSetDto resultSetDto, String fileName, MessageMetaDto dto) {
         validateResult(resultSetDto);
         File file = new File(fileName);
-        try (FileOutputStream fileOutputStream = new FileOutputStream(file);
-             ResultSet resultSet = resultSetDto.resultSet()) {
-
-            Workbook workbook = new Workbook(fileOutputStream, "GCELL", null);
-            String[] columnNames = getColumnNames(resultSet.getMetaData());
-            int[] columnTypes = getColumnsTypes(resultSet.getMetaData());
-
-            int sheetIndex = 0;
-            Worksheet worksheet = setSheetWithHeader(workbook, columnNames, sheetIndex++);
-
-            int standard = calculateStandard(resultSetDto.resultSetCount());
-            int rowCount = 1;
-            while (resultSet.next()) {
-                if (rowCount % standard == 0 && rowCount / standard < 10) {
-                    sendProgressRateMsg(dto, (rowCount / standard) * 10);
-                }
-                if (rowCount % MAX_ROWS == 0) {
-                    worksheet.finish();
-                    worksheet = setSheetWithHeader(workbook, columnNames, sheetIndex++);
-                }
-                writeExcelRow(worksheet, rowCount++, resultSet, columnTypes);
-            }
-            sendProgressRateMsg(dto, 100);
-            workbook.finish();
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+            writeExcel(resultSetDto, dto, fileOutputStream);
         } catch (Exception exception) {
             file.delete();
             throw new CustomException(exception, ErrorCode.EXCEL_WRITE_FAIL);
         }
         return file;
+    }
+
+    private void writeExcel(ResultSetDto resultSetDto, MessageMetaDto dto, FileOutputStream fileOutputStream)
+        throws SQLException, IOException {
+        ResultSet resultSet = resultSetDto.resultSet();
+        Workbook workbook = new Workbook(fileOutputStream, "GCELL", null);
+        String[] columnNames = getColumnNames(resultSet.getMetaData());
+        int[] columnTypes = getColumnsTypes(resultSet.getMetaData());
+
+        int sheetIndex = 0;
+        Worksheet worksheet = setSheetWithHeader(workbook, columnNames, sheetIndex++);
+
+        int standard = calculateStandard(resultSetDto.resultSetCount());
+        int rowCount = 1;
+        while (resultSet.next()) {
+            if (rowCount % standard == 0 && rowCount / standard < 10) {
+                sendProgressRateMsg(dto, (rowCount / standard) * 10);
+            }
+            if (rowCount % MAX_ROWS == 0) {
+                worksheet.finish();
+                worksheet = setSheetWithHeader(workbook, columnNames, sheetIndex++);
+            }
+            writeExcelRow(worksheet, rowCount++, resultSet, columnTypes);
+        }
+        sendProgressRateMsg(dto, 100);
+        workbook.finish();
     }
 
     private String[] getColumnNames(ResultSetMetaData metaData) throws SQLException {
@@ -87,6 +92,9 @@ public class ExcelWriter {
         Integer resultCount = resultSetDto.resultSetCount();
         if (resultCount == null || resultCount <= 0) {
             throw new CustomException(ErrorCode.NO_RESULT);
+        }
+        if (resultCount > MAX_RESULT_COUNT) {
+            throw new CustomException(ErrorCode.RESULT_COUNT_EXCEED);
         }
     }
 
