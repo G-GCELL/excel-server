@@ -39,38 +39,42 @@ public class CsvParser {
 	@TimerLog
 	public void insertWithCsv(File csvFile, YearMonth deleteTarget)
 		throws SQLException, IOException {
-		TransactionSynchronizationManager.initSynchronization();
-		Connection connection = DataSourceUtils.getConnection(dataSource);
-
-		connection.setAutoCommit(false);
+		Connection connection = startTransaction();
 		try (FileInputStream fileInputStream = new FileInputStream(csvFile)) {
 			excelDataJdbcRepository.deleteWithYearMonth(deleteTarget);
-
 			InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8");
 			BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-			skipHeader(bufferedReader);
-
-			String line;
-			List<ExcelData> excelDataList = new ArrayList<>(INSERT_UNIT_SIZE);
-			while ((line = bufferedReader.readLine()) != null) {
-				excelDataList.add(parseLine(line));
-				if (excelDataList.size() % INSERT_UNIT_SIZE == 0) {
-					excelDataJdbcRepository.insertExcelDataList(excelDataList);
-					excelDataList = new ArrayList<>(INSERT_UNIT_SIZE);
-				}
-			}
-			excelDataJdbcRepository.insertExcelDataList(excelDataList);
-			excelDataJdbcRepository.optimization();
+			insertWithReader(bufferedReader);
 			connection.commit();
 		} catch (Exception exception) {
 			connection.rollback();
 			throw exception;
 		} finally {
-			DataSourceUtils.releaseConnection(connection, dataSource);
-			TransactionSynchronizationManager.unbindResource(dataSource);
-			TransactionSynchronizationManager.clearSynchronization();
+			endTransaction(connection);
 			csvFile.delete();
 		}
+	}
+
+	private Connection startTransaction() throws SQLException {
+		TransactionSynchronizationManager.initSynchronization();
+		Connection connection = DataSourceUtils.getConnection(dataSource);
+		connection.setAutoCommit(false);
+		return connection;
+	}
+
+	private void insertWithReader(BufferedReader bufferedReader) throws IOException {
+		skipHeader(bufferedReader);
+		String line;
+		List<ExcelData> excelDataList = new ArrayList<>(INSERT_UNIT_SIZE);
+		while ((line = bufferedReader.readLine()) != null) {
+			excelDataList.add(parseLine(line));
+			if (excelDataList.size() % INSERT_UNIT_SIZE == 0) {
+				excelDataJdbcRepository.insertExcelDataList(excelDataList);
+				excelDataList = new ArrayList<>(INSERT_UNIT_SIZE);
+			}
+		}
+		excelDataJdbcRepository.insertExcelDataList(excelDataList);
+		excelDataJdbcRepository.optimization();
 	}
 
 	private void skipHeader(BufferedReader bufferedReader) throws IOException {
@@ -105,6 +109,12 @@ public class CsvParser {
 			return LocalDateTime.parse(dateTime.substring(0, dateTime.length() - 1));
 		}
 		return LocalDateTime.parse(dateTime);
+	}
+
+	private void endTransaction(Connection connection) {
+		DataSourceUtils.releaseConnection(connection, dataSource);
+		TransactionSynchronizationManager.unbindResource(dataSource);
+		TransactionSynchronizationManager.clearSynchronization();
 	}
 
 }
