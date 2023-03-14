@@ -63,6 +63,7 @@ public class ExcelWriter {
             if (rowCount % MAX_ROWS == 0) {
                 worksheet.finish();
                 worksheet = setSheetWithHeader(workbook, columnNames, sheetIndex++);
+                rowCount++;
             }
             writeExcelRow(worksheet, rowCount++, resultSet, columnTypes);
         }
@@ -121,7 +122,6 @@ public class ExcelWriter {
     private void writeExcelRow(Worksheet worksheet, int rowCount, ResultSet resultSet,
         int[] columnTypes) throws SQLException, IOException {
         int currentRow = rowCount % MAX_ROWS;
-        currentRow = currentRow == 0 ? currentRow + 1 : currentRow;
         for (int i = 0; i < columnTypes.length; i++) {
             switch (columnTypes[i]) {
                 case ColumnType.BIGINT -> worksheet.value(currentRow, i, resultSet.getLong(i + 1));
