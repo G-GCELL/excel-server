@@ -1,34 +1,18 @@
-# This file is a template, and might need editing before it works on your project.
-# This is a sample GitLab CI/CD configuration file that should run without any modifications.
-# It demonstrates a basic 3 stage CI/CD pipeline. Instead of real tests or scripts,
-# it uses echo commands to simulate the pipeline execution.
-#
-# A pipeline is composed of independent jobs that run scripts, grouped into stages.
-# Stages run in sequential order, but jobs within stages run in parallel.
-#
-# For more information, see: https://docs.gitlab.com/ee/ci/yaml/index.html#stages
-#
-# You can copy and paste this template into a new `.gitlab-ci.yml` file.
-# You should not add this template to an existing `.gitlab-ci.yml` file by using the `include:` keyword.
-#
-# To contribute improvements to CI/CD templates, please follow the Development guide at:
-# https://docs.gitlab.com/ee/development/cicd/templates.html
-# This specific template is located at:
-# https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Getting-Started.gitlab-ci.yml
-
-stages:          # List of stages for jobs, and their order of execution
+stages:
   - build
   - test
   - visualize
+  - package
+  - deploy
 
-
-build-job:       # This job runs in the build stage, which runs first.
+build:
   stage: build
   image: openjdk:17-oracle
   tags:
     - weat-excel
   before_script:
     - microdnf install findutils
+    - echo "$APPLICATION_INFO" > "src/main/resources/application.yml"
   script:
     - ./gradlew clean bootJar
   artifacts:
@@ -45,13 +29,12 @@ test:
     - microdnf install findutils
   script:
     - ./gradlew test
+  coverage: '/    - Instruction Coverage: ([0-9.]+)%/'
   artifacts:
     paths:
       - build/reports/jacoco/test/jacoco*.xml
     reports:
       junit: build/test-results/test/**/TEST-*.xml
-
-
 
 coverage:
   stage: visualize
@@ -66,3 +49,35 @@ coverage:
       coverage_report:
         coverage_format: cobertura
         path: build/cobertura.xml
+
+package:
+  stage: package
+  tags:
+    - weat-excel
+  services:
+    - docker:20.10.23-dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER_NAME -p $CI_REGISTRY_TOKEN $CI_REGISTRY
+  script:
+    - docker build -t $CI_REGISTRY/mentee/mentee_2023.01/team/weat/gcell-excel-server .
+    - docker push $CI_REGISTRY/mentee/mentee_2023.01/team/weat/gcell-excel-server
+  only:
+    - dev
+
+deploy:
+  stage: deploy
+  tags:
+    - weat-excel
+  services:
+    - docker:20.10.23-dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER_NAME -p $CI_REGISTRY_TOKEN $CI_REGISTRY
+  script:
+    - docker ps -a
+    - docker-compose -f $EXCEL_DOCKER_COMPOSE down
+    - docker-compose -f $EXCEL_DOCKER_COMPOSE up -d $SCALE_OPTION
+    - docker ps -a
+  after_script:
+    - docker logout
+  only:
+    - dev

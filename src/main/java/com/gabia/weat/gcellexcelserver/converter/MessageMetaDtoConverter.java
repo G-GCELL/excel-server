@@ -9,6 +9,7 @@ public class MessageMetaDtoConverter {
 	public static FileCreateProgressMsgDto toFileCreateProgressMsgDto(MessageMetaDto messageMetaDto) {
 		return FileCreateProgressMsgDto.builder()
 			.memberId(messageMetaDto.memberId())
+			.excelInfoId(messageMetaDto.excelInfoId())
 			.messageType(MessageType.FILE_CREATION_COMPLETE)
 			.memberFileName(messageMetaDto.fileName())
 			.progressRate(null)
@@ -18,6 +19,7 @@ public class MessageMetaDtoConverter {
 	public static FileCreateProgressMsgDto toFileCreateProgressMsgDto(MessageMetaDto messageMetaDto, int rate) {
 		return FileCreateProgressMsgDto.builder()
 			.memberId(messageMetaDto.memberId())
+			.excelInfoId(messageMetaDto.excelInfoId())
 			.messageType(MessageType.FILE_CREATION_PROGRESS)
 			.memberFileName(messageMetaDto.fileName())
 			.progressRate(rate)

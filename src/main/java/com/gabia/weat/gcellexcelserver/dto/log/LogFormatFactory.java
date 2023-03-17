@@ -1,5 +1,7 @@
 package com.gabia.weat.gcellexcelserver.dto.log;
 
+import static com.gabia.weat.gcellexcelserver.dto.log.TimerLogFormatDto.*;
+
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.event.Level;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,7 +19,7 @@ public class LogFormatFactory {
 	private ThreadLocal<String> traceInfoHolder = new ThreadLocal<>();
 
 	public void startTrace() {
-		traceInfoHolder.set(RandomStringUtils.random(TRACE_ID_LENGTH));
+		traceInfoHolder.set(RandomStringUtils.random(TRACE_ID_LENGTH, true, true));
 	}
 
 	public void startTrace(String traceId) {
@@ -34,6 +36,13 @@ public class LogFormatFactory {
 	public MessageBrokerLogFormatDtoBuilder getMessageBrokerLogFormatBuilder() {
 		return MessageBrokerLogFormatDto.builder()
 			.level(Level.INFO)
+			.serverName(serverName)
+			.traceId(this.traceInfoHolder.get());
+	}
+
+	public TimerLogFormatDtoBuilder getTimerLogFormatBuilder(){
+		return TimerLogFormatDto.builder()
+			.level(Level.DEBUG)
 			.serverName(serverName)
 			.traceId(this.traceInfoHolder.get());
 	}

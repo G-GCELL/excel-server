@@ -9,7 +9,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import com.gabia.weat.gcellexcelserver.domain.type.MessageType;
@@ -20,7 +19,7 @@ import com.gabia.weat.gcellexcelserver.dto.MessageWrapperDto;
 public class FileCreateProgressProducerTest {
 
 	@Mock
-	private RabbitTemplate rabbitTemplate;
+	private RabbitTemplate fileCreateProgressRabbitTemplate;
 	@InjectMocks
 	private FileCreateProgressProducer fileCreateProgressProducer;
 
@@ -30,15 +29,17 @@ public class FileCreateProgressProducerTest {
 		// given
 		FileCreateProgressMsgDto fileCreateProgressMsgDto = this.getCreateProgressMsgDto();
 		String traceId = "testid";
-		MessageWrapperDto<FileCreateProgressMsgDto> messageWrapperDto = MessageWrapperDto.wrapMessageDto(fileCreateProgressMsgDto, traceId);
+		MessageWrapperDto<FileCreateProgressMsgDto> messageWrapperDto = MessageWrapperDto.wrapMessageDto(
+			fileCreateProgressMsgDto, traceId);
 
 		// when & then
 		assertThatCode(() -> fileCreateProgressProducer.sendMessage(messageWrapperDto)).doesNotThrowAnyException();
-		verify(rabbitTemplate, times(1)).correlationConvertAndSend(eq(messageWrapperDto), any(CorrelationData.class));
+		verify(fileCreateProgressRabbitTemplate, times(1)).convertAndSend(eq(messageWrapperDto));
 	}
 
 	private FileCreateProgressMsgDto getCreateProgressMsgDto() {
 		return new FileCreateProgressMsgDto(
+			1L,
 			1L,
 			MessageType.FILE_CREATION_PROGRESS,
 			"testFileName",

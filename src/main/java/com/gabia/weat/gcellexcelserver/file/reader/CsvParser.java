@@ -9,19 +9,18 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.io.FileUtils;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import com.gabia.weat.gcellexcelserver.annotation.TimerLog;
 import com.gabia.weat.gcellexcelserver.domain.ExcelData;
 import com.gabia.weat.gcellexcelserver.error.ErrorCode;
 import com.gabia.weat.gcellexcelserver.repository.ExcelDataJdbcRepository;
@@ -37,45 +36,45 @@ public class CsvParser {
 	private final String[] HEADERS_ORDER_RULE = {"account_id", "usage_date", "product_code", "cost"};
 	private final DataSource dataSource;
 
-	public void insertWithCsv(String csvFilePath) throws SQLException, IOException {
-		File copied = copyOriginCsv(csvFilePath);
-		TransactionSynchronizationManager.initSynchronization();
-		Connection connection = DataSourceUtils.getConnection(dataSource);
-
-		try (FileInputStream fileInputStream = new FileInputStream(copied)) {
-			connection.setAutoCommit(false);
+	@TimerLog
+	public void insertWithCsv(File csvFile, YearMonth deleteTarget)
+		throws SQLException, IOException {
+		Connection connection = startTransaction();
+		try (FileInputStream fileInputStream = new FileInputStream(csvFile)) {
+			excelDataJdbcRepository.deleteWithYearMonth(deleteTarget);
 			InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8");
 			BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-			skipHeader(bufferedReader);
-
-			String line;
-			List<ExcelData> excelDataList = new ArrayList<>(INSERT_UNIT_SIZE);
-			while ((line = bufferedReader.readLine()) != null) {
-				excelDataList.add(parseLine(line));
-				if (excelDataList.size() % INSERT_UNIT_SIZE == 0) {
-					excelDataJdbcRepository.insertExcelDataList(excelDataList);
-					excelDataList = new ArrayList<>(INSERT_UNIT_SIZE);
-				}
-			}
-			excelDataJdbcRepository.insertExcelDataList(excelDataList);
+			insertWithReader(bufferedReader);
 			connection.commit();
+		} catch (Exception exception) {
+			connection.rollback();
+			throw exception;
 		} finally {
-			DataSourceUtils.releaseConnection(connection, dataSource);
-			TransactionSynchronizationManager.unbindResource(dataSource);
-			TransactionSynchronizationManager.clearSynchronization();
+			endTransaction(connection);
+			csvFile.delete();
 		}
 	}
 
-	private File copyOriginCsv(String csvFilePath) throws IOException {
-		String destPath = getDayDirectory() + File.separator + csvFilePath;
-		File srcFile = new File(csvFilePath);
-		File destFile = new File(destPath);
-		FileUtils.copyFile(srcFile, destFile);
-		return destFile;
+	private Connection startTransaction() throws SQLException {
+		TransactionSynchronizationManager.initSynchronization();
+		Connection connection = DataSourceUtils.getConnection(dataSource);
+		connection.setAutoCommit(false);
+		return connection;
 	}
 
-	private String getDayDirectory() {
-		return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/M/d"));
+	private void insertWithReader(BufferedReader bufferedReader) throws IOException {
+		skipHeader(bufferedReader);
+		String line;
+		List<ExcelData> excelDataList = new ArrayList<>(INSERT_UNIT_SIZE);
+		while ((line = bufferedReader.readLine()) != null) {
+			excelDataList.add(parseLine(line));
+			if (excelDataList.size() % INSERT_UNIT_SIZE == 0) {
+				excelDataJdbcRepository.insertExcelDataList(excelDataList);
+				excelDataList = new ArrayList<>(INSERT_UNIT_SIZE);
+			}
+		}
+		excelDataJdbcRepository.insertExcelDataList(excelDataList);
+		excelDataJdbcRepository.optimization();
 	}
 
 	private void skipHeader(BufferedReader bufferedReader) throws IOException {
@@ -98,11 +97,24 @@ public class CsvParser {
 		}
 		return ExcelData.createWithoutId(
 			dataFragments[0],
-			LocalDateTime.parse(dataFragments[1]),
-			LocalDateTime.parse(dataFragments[2]),
+			parseDateTime(dataFragments[1]),
+			parseDateTime(dataFragments[2]),
 			dataFragments[3],
 			new BigDecimal(dataFragments[4])
 		);
+	}
+
+	private LocalDateTime parseDateTime(String dateTime) {
+		if (dateTime.charAt(dateTime.length() - 1) == 'Z') {
+			return LocalDateTime.parse(dateTime.substring(0, dateTime.length() - 1));
+		}
+		return LocalDateTime.parse(dateTime);
+	}
+
+	private void endTransaction(Connection connection) {
+		DataSourceUtils.releaseConnection(connection, dataSource);
+		TransactionSynchronizationManager.unbindResource(dataSource);
+		TransactionSynchronizationManager.clearSynchronization();
 	}
 
 }

@@ -9,10 +9,12 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import com.gabia.weat.gcellexcelserver.annotation.TimerLog;
 import com.gabia.weat.gcellexcelserver.dto.JdbcDto.QuerySetDto;
 import com.gabia.weat.gcellexcelserver.dto.JdbcDto.ResultSetDto;
 import com.gabia.weat.gcellexcelserver.dto.MessageDto.FileCreateRequestMsgDto;
@@ -24,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import com.gabia.weat.gcellexcelserver.domain.ExcelData;
@@ -62,6 +65,24 @@ public class ExcelDataJdbcRepository {
 			});
 	}
 
+	public void deleteWithYearMonth(YearMonth target) {
+		if (target == null) {
+			return;
+		}
+		LocalDateTime from = LocalDateTime.of(target.getYear(), target.getMonth(), 1, 0, 0, 0);
+		LocalDateTime to = LocalDateTime.of(target.getYear(), target.getMonth(), target.atEndOfMonth().getDayOfMonth(),
+			23, 59, 59);
+		String sql = "delete from excel_data where start_date between ? and ?";
+		jdbcTemplate.update(sql, from, to);
+	}
+
+	public void optimization() {
+		jdbcTemplate.update("set GLOBAL innodb_optimize_fulltext_only=ON");
+		jdbcTemplate.query("optimize table excel_data", (RowMapper<String>)(rs, rowNum) -> null);
+		jdbcTemplate.update("set GLOBAL innodb_optimize_fulltext_only=OFF");
+	}
+
+	@TimerLog
 	public ResultSetDto getResultSet(FileCreateRequestMsgDto dto) throws SQLException {
 		Connection conn = getConnection();
 		validateColumnNames(dto.columnNames(), conn);

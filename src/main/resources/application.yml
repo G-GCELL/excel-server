@@ -3,6 +3,8 @@ server:
   name: ${SERVER_NAME}
 
 spring:
+  application:
+    name: monitoring
   datasource:
     url: jdbc:${DB}://${DB_HOST}:${DB_PORT}/${DB_NAME}?rewriteBatchedStatements=true
     username: ${DB_USER}
@@ -10,19 +12,20 @@ spring:
     hikari:
       maximum-pool-size: ${DB_POOL_MAX_SIZE}
       connection-timeout: ${DB_CONNECTION_TIMEOUT}
-
   jpa:
-    show-sql: true
+    show-sql: false
     hibernate:
       ddl-auto: ${DDL_AUTO}
     properties:
       hibernate:
         format_sql: true
         default_batch_fetch_size: ${FETCH_SIZE}
+    open-in-view: false
 
 minio:
   bucket:
-    name: ${MINIO_BUCKET_NAME}
+    excel: ${MINIO_BUCKET_EXCEL}
+    csv: ${MINIO_BUCKET_CSV}
   access:
     key: ${MINIO_KEY}
     secret: ${MINIO_PASSWORD}
@@ -35,10 +38,37 @@ rabbitmq:
   password: ${RABBITMQ_PASSWORD}
   exchange:
     file-create-progress-exchange: ${FILE_CREATE_PROGRESS_EXCHANGE}
+    direct-exchange: ${DIRECT_EXCHANGE}
+    file-create-error-exchange: ${FILE_CREATE_ERROR_EXCHANGE}
   queue:
     file-create-request-queue: ${FILE_CREATE_REQUEST_QUEUE}
-    file-create-progress-queue: ${FILE_CREATE_PROGRESS_QUEUE}
+    csv-update-request-queue: ${CSV_UPDATE_REQUEST_QUEUE}
   listener:
     concurrency: ${LISTENER_CONCURRENCY}
     max-concurrency: ${LISTENER_MAX_CONCURRENCY}
     prefetch: ${LISTENER_PREFETCH}
+  routing-key:
+    file-create-request-routing-key: ${FILE_CREATE_REQUEST_ROUTING_KEY}
+    csv-update-request-routing-key: ${CSV_UPDATE_REQUEST_ROUTING_KEY}
+
+management:
+  endpoint:
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics, prometheus
+  metrics:
+    tags:
+      application: test-name
+
+debug: false
+logging:
+  level:
+    com.gabia.weat.gcellexcelserver: debug
+    org.springframework.web.servlet: debug
+    org.hibernate.sql: debug
+    org.hibernate.orm.jdbc.bind: trace

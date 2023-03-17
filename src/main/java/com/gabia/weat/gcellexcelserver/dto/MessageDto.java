@@ -2,6 +2,7 @@ package com.gabia.weat.gcellexcelserver.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -18,6 +19,8 @@ public class MessageDto {
 	public record FileCreateRequestMsgDto(
 		@NotNull
 		Long memberId,
+		@NotNull
+		Long excelInfoId,
 		@NotBlank
 		String fileName,
 		@NotEmpty
@@ -48,9 +51,26 @@ public class MessageDto {
 	@Builder
 	public record FileCreateProgressMsgDto(
 		Long memberId,
+		Long excelInfoId,
 		MessageType messageType,
 		String memberFileName,
 		Integer progressRate
+	) {
+	}
+
+	@Builder
+	public record FileCreateErrorMsgDto(
+		Long memberId,
+		Long excelInfoId,
+		int errorCode,
+		String errorMessage
+	) {
+	}
+
+	public record CsvUpdateRequestDto(
+		@NotBlank
+		String fileLocate,
+		YearMonth deleteTarget
 	) {
 	}
 

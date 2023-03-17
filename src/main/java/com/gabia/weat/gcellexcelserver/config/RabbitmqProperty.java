@@ -17,22 +17,21 @@ public class RabbitmqProperty {
 	private ExchangeProperty exchange;
 	private QueueProperty queue;
 	private ListenerProperty listener;
+	private RoutingKeyProperty routingKey;
 
 	@Getter
 	@AllArgsConstructor
 	public static class ExchangeProperty {
 		private String fileCreateProgressExchange;
+		private String directExchange;
+		private String fileCreateErrorExchange;
 	}
 
 	@Getter
 	@AllArgsConstructor
 	public static class QueueProperty {
 		private String fileCreateRequestQueue;
-		private String fileCreateProgressQueue;
-
-		public String getFileCreateProgressQueue(String serverName) {
-			return fileCreateProgressQueue + "-" + serverName.substring(serverName.length() - 1);
-		}
+		private String csvUpdateRequestQueue;
 	}
 
 	@Getter
@@ -41,6 +40,13 @@ public class RabbitmqProperty {
 		private Integer concurrency;
 		private Integer maxConcurrency;
 		private Integer prefetch;
+	}
+
+	@Getter
+	@AllArgsConstructor
+	public static class RoutingKeyProperty {
+		private String fileCreateRequestRoutingKey;
+		private String csvUpdateRequestRoutingKey;
 	}
 
 }
