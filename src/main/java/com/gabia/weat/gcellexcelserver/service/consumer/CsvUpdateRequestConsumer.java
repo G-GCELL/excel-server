@@ -8,6 +8,7 @@ import com.gabia.weat.gcellexcelserver.dto.MessageDto.CsvUpdateRequestDto;
 import com.gabia.weat.gcellexcelserver.dto.MessageWrapperDto;
 import com.gabia.weat.gcellexcelserver.service.ExcelDataService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -19,8 +20,9 @@ public class CsvUpdateRequestConsumer implements Consumer<CsvUpdateRequestDto> {
 	@Override
 	@ConsumerLog(queue = "${rabbitmq.queue.csv-update-request-queue}")
 	@RabbitListener(containerFactory = "csvUpdateRequestListenerFactory")
-	public void receiveMessage(MessageWrapperDto<CsvUpdateRequestDto> message) throws Exception {
-		excelDataService.updateExcelData(message);
+	public void receiveMessage(@Valid MessageWrapperDto<CsvUpdateRequestDto> message) throws Exception {
+		CsvUpdateRequestDto dto = message.getMessage();
+		excelDataService.updateExcelData(dto.fileLocate(), dto.email(), dto.deleteTarget());
 	}
 
 }
