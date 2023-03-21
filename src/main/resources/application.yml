@@ -22,6 +22,16 @@ spring:
         default_batch_fetch_size: ${FETCH_SIZE}
     open-in-view: false
 
+  mail:
+    host: smtp.naver.com
+    port: 465
+    username: ${NAVER_MAIL_ID}
+    password: ${NAVER_MAIL_PASSWORD}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.ssl.enable: true
+      mail.smtp.ssl.trust: smtp.naver.com
+
 minio:
   bucket:
     excel: ${MINIO_BUCKET_EXCEL}

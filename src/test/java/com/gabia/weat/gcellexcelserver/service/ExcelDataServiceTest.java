@@ -3,7 +3,7 @@ package com.gabia.weat.gcellexcelserver.service;
 import static org.mockito.BDDMockito.*;
 
 import com.gabia.weat.gcellexcelserver.dto.JdbcDto.ResultSetDto;
-import com.gabia.weat.gcellexcelserver.dto.MessageDto;
+import com.gabia.weat.gcellexcelserver.dto.MessageDto.CsvUpdateRequestDto;
 import com.gabia.weat.gcellexcelserver.dto.MessageDto.FileCreateRequestMsgDto;
 import com.gabia.weat.gcellexcelserver.dto.MessageWrapperDto;
 import com.gabia.weat.gcellexcelserver.file.reader.CsvParser;
@@ -42,12 +42,13 @@ class ExcelDataServiceTest {
 	void updateExcelDataTest() throws SQLException, IOException {
 		// given
 		String traceId = "testid";
-		MessageWrapperDto<MessageDto.CsvUpdateRequestDto> messageWrapperDto = MessageWrapperDto.wrapMessageDto(
-			new MessageDto.CsvUpdateRequestDto("data/202202.csv", null), traceId
+		MessageWrapperDto<CsvUpdateRequestDto> messageWrapperDto = MessageWrapperDto.wrapMessageDto(
+			new CsvUpdateRequestDto("data/202202.csv", "test@gabia.com", null), traceId
 		);
 
 		// when
-		excelDataService.updateExcelData(messageWrapperDto);
+		CsvUpdateRequestDto message = messageWrapperDto.getMessage();
+		excelDataService.updateExcelData(message.fileLocate(), message.email(), message.deleteTarget());
 
 		// then
 		verify(csvParser, times(1)).insertWithCsv(null, null);
