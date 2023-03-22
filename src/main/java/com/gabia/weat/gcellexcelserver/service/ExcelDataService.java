@@ -3,12 +3,13 @@ package com.gabia.weat.gcellexcelserver.service;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.YearMonth;
 
+import com.gabia.weat.gcellexcelserver.annotation.MailAlarm;
 import com.gabia.weat.gcellexcelserver.annotation.TimerLog;
 import com.gabia.weat.gcellexcelserver.converter.MessageDtoConverter;
 import com.gabia.weat.gcellexcelserver.converter.MessageMetaDtoConverter;
 import com.gabia.weat.gcellexcelserver.dto.JdbcDto.ResultSetDto;
-import com.gabia.weat.gcellexcelserver.dto.MessageDto.CsvUpdateRequestDto;
 import com.gabia.weat.gcellexcelserver.dto.MessageDto.FileCreateRequestMsgDto;
 import com.gabia.weat.gcellexcelserver.dto.MessageWrapperDto;
 import com.gabia.weat.gcellexcelserver.dto.MessageMetaDto;
@@ -37,11 +38,11 @@ public class ExcelDataService {
 	private final FileCreateProgressProducer fileCreateProgressProducer;
 
 	@TimerLog
-	public void updateExcelData(@Valid MessageWrapperDto<CsvUpdateRequestDto> messageWrapperDto)
+	@MailAlarm
+	public void updateExcelData(String fileLocate, String email, YearMonth deleteTarget)
 		throws SQLException, IOException {
-		CsvUpdateRequestDto dto = messageWrapperDto.getMessage();
-		File csvFile = minioService.downloadFile(dto.fileLocate());
-		csvParser.insertWithCsv(csvFile, dto.deleteTarget());
+		File csvFile = minioService.downloadFile(fileLocate);
+		csvParser.insertWithCsv(csvFile, deleteTarget);
 	}
 
 	@TimerLog

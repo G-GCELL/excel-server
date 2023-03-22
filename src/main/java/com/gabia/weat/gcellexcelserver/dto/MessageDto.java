@@ -70,6 +70,8 @@ public class MessageDto {
 	public record CsvUpdateRequestDto(
 		@NotBlank
 		String fileLocate,
+		@NotBlank
+		String email,
 		YearMonth deleteTarget
 	) {
 	}

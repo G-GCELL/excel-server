@@ -29,13 +29,18 @@ class CsvUpdateRequestConsumerTest {
 		// given
 		String traceId = "testid";
 		MessageWrapperDto<CsvUpdateRequestDto> messageWrapperDto = MessageWrapperDto.wrapMessageDto(
-			new CsvUpdateRequestDto("data/202202.csv", null), traceId
+			new CsvUpdateRequestDto("data/202202.csv", "test@gabia.com", null), traceId
 		);
+		CsvUpdateRequestDto message = messageWrapperDto.getMessage();
 
 		// when & then
 		assertThatCode(
 			() -> csvUpdateRequestConsumer.receiveMessage(messageWrapperDto)).doesNotThrowAnyException();
-		verify(excelDataService, times(1)).updateExcelData(eq(messageWrapperDto));
+		verify(excelDataService, times(1)).updateExcelData(
+			eq(message.fileLocate()),
+			eq(message.email()),
+			eq(message.deleteTarget())
+		);
 	}
 
 }

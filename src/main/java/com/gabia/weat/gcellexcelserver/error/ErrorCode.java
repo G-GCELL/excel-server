@@ -16,7 +16,8 @@ public enum ErrorCode {
 	MINIO_UPLOAD_FAIL(CustomStatus.MINIO_UPLOAD_FAIL , "파일 업로드에 실패하였습니다."),
 	MINIO_DOWNLOAD_FAIL(CustomStatus.MINIO_DOWNLOAD_FAIL , "파일 다운로드에 실패하였습니다."),
 	INVALID_CSV_HEADER(CustomStatus.INVALID_CSV_HEADER,"CSV 파일 헤더가 올바르지 않습니다."),
-	INVALID_CSV_FORMAT(CustomStatus.INVALID_CSV_FORMAT, "CSV 파일 형식이 올바르지 않습니다.");
+	INVALID_CSV_FORMAT(CustomStatus.INVALID_CSV_FORMAT, "CSV 파일 형식이 올바르지 않습니다."),
+	MAIL_SEND_FAIL(CustomStatus.MAIL_SEND_FAIL, "메일 전송에 실패하였습니다.");
 
 	private final CustomStatus customStatus;
 	private final String message;
