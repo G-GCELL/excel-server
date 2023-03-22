@@ -10,7 +10,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.gabia.weat.gcellexcelserver.message.MailMessage;
-import com.gabia.weat.gcellexcelserver.service.MailService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AlarmAspect {
 
-	private final MailService mailService;
+	private final MailMessage mailMessage;
 
 	@Around("@annotation(com.gabia.weat.gcellexcelserver.annotation.MailAlarm)")
 	public Object mailAlarmAdvisor(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -30,18 +29,10 @@ public class AlarmAspect {
 		try {
 			result = joinPoint.proceed();
 		} catch (Exception e) {
-			mailService.sendMail(
-				email,
-				MailMessage.JOB_FAIL_MAIL_TITLE,
-				MailMessage.fail(methodName, input, e.getMessage())
-			);
+			mailMessage.fail(email, methodName, input, e.getMessage());
 			throw e;
 		}
-		mailService.sendMail(
-			email,
-			MailMessage.JOB_COMPLETION_MAIL_TITLE,
-			MailMessage.success(methodName, input)
-		);
+		mailMessage.success(email, methodName, input);
 		return result;
 	}
 
