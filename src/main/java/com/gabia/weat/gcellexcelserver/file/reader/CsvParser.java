@@ -20,9 +20,9 @@ import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import com.gabia.weat.gcellexcelserver.annotation.TimerLog;
+import com.gabia.weat.gcellcommonmodule.annotation.TimerLog;
+import com.gabia.weat.gcellcommonmodule.error.ErrorCode;
 import com.gabia.weat.gcellexcelserver.domain.ExcelData;
-import com.gabia.weat.gcellexcelserver.error.ErrorCode;
 import com.gabia.weat.gcellexcelserver.repository.ExcelDataJdbcRepository;
 
 import lombok.RequiredArgsConstructor;

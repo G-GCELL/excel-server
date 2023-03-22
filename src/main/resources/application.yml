@@ -79,6 +79,7 @@ debug: false
 logging:
   level:
     com.gabia.weat.gcellexcelserver: debug
+    com.gabia.weat.gcellcommonmodule: debug
     org.springframework.web.servlet: debug
     org.hibernate.sql: debug
     org.hibernate.orm.jdbc.bind: trace
