@@ -1,1 +1,3 @@
 rootProject.name = 'gcell-excel-server'
+
+include(':gcell-common-module')

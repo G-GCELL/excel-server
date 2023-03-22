@@ -5,8 +5,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import com.gabia.weat.gcellexcelserver.error.ErrorCode;
-import com.gabia.weat.gcellexcelserver.error.exception.CustomException;
+import com.gabia.weat.gcellcommonmodule.error.ErrorCode;
+import com.gabia.weat.gcellcommonmodule.error.exception.CustomException;
 import com.gabia.weat.gcellexcelserver.message.MailMessage;
 
 import jakarta.mail.internet.InternetAddress;

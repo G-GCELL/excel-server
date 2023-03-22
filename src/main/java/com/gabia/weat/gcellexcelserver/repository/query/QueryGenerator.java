@@ -1,7 +1,8 @@
 package com.gabia.weat.gcellexcelserver.repository.query;
 
+import static com.gabia.weat.gcellcommonmodule.dto.MessageDto.*;
+
 import com.gabia.weat.gcellexcelserver.dto.JdbcDto.QuerySetDto;
-import com.gabia.weat.gcellexcelserver.dto.MessageDto.FileCreateRequestMsgDto;
 
 public interface QueryGenerator {
 

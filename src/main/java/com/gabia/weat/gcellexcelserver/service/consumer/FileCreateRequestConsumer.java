@@ -3,9 +3,10 @@ package com.gabia.weat.gcellexcelserver.service.consumer;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
-import com.gabia.weat.gcellexcelserver.annotation.ConsumerLog;
-import com.gabia.weat.gcellexcelserver.dto.MessageDto.FileCreateRequestMsgDto;
-import com.gabia.weat.gcellexcelserver.dto.MessageWrapperDto;
+import com.gabia.weat.gcellcommonmodule.annotation.ConsumerLog;
+import com.gabia.weat.gcellcommonmodule.dto.MessageDto;
+import com.gabia.weat.gcellcommonmodule.dto.MessageDto.FileCreateRequestMsgDto;
+import com.gabia.weat.gcellcommonmodule.dto.MessageWrapperDto;
 import com.gabia.weat.gcellexcelserver.service.ExcelDataService;
 
 import lombok.RequiredArgsConstructor;

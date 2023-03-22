@@ -1,5 +1,6 @@
 package com.gabia.weat.gcellexcelserver.service.producer;
 
+import static com.gabia.weat.gcellcommonmodule.dto.MessageDto.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -11,9 +12,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
-import com.gabia.weat.gcellexcelserver.domain.type.MessageType;
-import com.gabia.weat.gcellexcelserver.dto.MessageDto.FileCreateProgressMsgDto;
-import com.gabia.weat.gcellexcelserver.dto.MessageWrapperDto;
+import com.gabia.weat.gcellcommonmodule.dto.MessageWrapperDto;
+import com.gabia.weat.gcellcommonmodule.type.MessageType;
 
 @ExtendWith(MockitoExtension.class)
 public class FileCreateProgressProducerTest {
