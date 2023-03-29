@@ -1,5 +1,6 @@
 package com.gabia.weat.gcellexcelserver.service.consumer;
 
+import static com.gabia.weat.gcellcommonmodule.dto.MessageDto.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -10,8 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.gabia.weat.gcellexcelserver.dto.MessageDto.FileCreateRequestMsgDto;
-import com.gabia.weat.gcellexcelserver.dto.MessageWrapperDto;
+import com.gabia.weat.gcellcommonmodule.dto.MessageWrapperDto;
 import com.gabia.weat.gcellexcelserver.service.ExcelDataService;
 
 @ExtendWith(MockitoExtension.class)

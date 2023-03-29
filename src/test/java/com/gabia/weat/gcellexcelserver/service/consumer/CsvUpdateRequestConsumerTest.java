@@ -1,5 +1,6 @@
 package com.gabia.weat.gcellexcelserver.service.consumer;
 
+import static com.gabia.weat.gcellcommonmodule.dto.MessageDto.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -11,8 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.gabia.weat.gcellexcelserver.dto.MessageDto.CsvUpdateRequestDto;
-import com.gabia.weat.gcellexcelserver.dto.MessageWrapperDto;
+import com.gabia.weat.gcellcommonmodule.dto.MessageWrapperDto;
 import com.gabia.weat.gcellexcelserver.service.ExcelDataService;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,14 +28,19 @@ class CsvUpdateRequestConsumerTest {
 	public void receiveMessage_test() throws Exception {
 		// given
 		String traceId = "testid";
-		MessageWrapperDto<CsvUpdateRequestDto> messageWrapperDto = MessageWrapperDto.wrapMessageDto(
-			new CsvUpdateRequestDto("data/202202.csv", null), traceId
+		MessageWrapperDto<CsvUpdateRequestMsgDto> messageWrapperDto = MessageWrapperDto.wrapMessageDto(
+			new CsvUpdateRequestMsgDto("data/202202.csv", "test@gabia.com", null), traceId
 		);
+		CsvUpdateRequestMsgDto message = messageWrapperDto.getMessage();
 
 		// when & then
 		assertThatCode(
 			() -> csvUpdateRequestConsumer.receiveMessage(messageWrapperDto)).doesNotThrowAnyException();
-		verify(excelDataService, times(1)).updateExcelData(eq(messageWrapperDto));
+		verify(excelDataService, times(1)).updateExcelData(
+			eq(message.fileLocate()),
+			eq(message.email()),
+			eq(message.deleteTarget())
+		);
 	}
 
 }

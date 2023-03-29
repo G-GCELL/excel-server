@@ -1,12 +1,13 @@
 package com.gabia.weat.gcellexcelserver.repository.query;
 
+import static com.gabia.weat.gcellcommonmodule.dto.MessageDto.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.gabia.weat.gcellexcelserver.dto.JdbcDto.QuerySetDto;
-import com.gabia.weat.gcellexcelserver.dto.MessageDto.FileCreateRequestMsgDto;
 
 import org.springframework.stereotype.Component;
 

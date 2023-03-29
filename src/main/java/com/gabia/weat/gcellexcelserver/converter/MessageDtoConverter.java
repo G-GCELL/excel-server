@@ -1,7 +1,8 @@
 package com.gabia.weat.gcellexcelserver.converter;
 
-import com.gabia.weat.gcellexcelserver.dto.MessageDto.FileCreateErrorMsgDto;
-import com.gabia.weat.gcellexcelserver.dto.MessageDto.FileCreateRequestMsgDto;
+import static com.gabia.weat.gcellcommonmodule.dto.MessageDto.*;
+
+import com.gabia.weat.gcellcommonmodule.dto.MessageDto;
 import com.gabia.weat.gcellexcelserver.dto.MessageMetaDto;
 
 public class MessageDtoConverter {

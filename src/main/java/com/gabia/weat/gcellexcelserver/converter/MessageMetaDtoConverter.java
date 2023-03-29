@@ -1,7 +1,7 @@
 package com.gabia.weat.gcellexcelserver.converter;
 
-import com.gabia.weat.gcellexcelserver.domain.type.MessageType;
-import com.gabia.weat.gcellexcelserver.dto.MessageDto.FileCreateProgressMsgDto;
+import com.gabia.weat.gcellcommonmodule.dto.MessageDto.FileCreateProgressMsgDto;
+import com.gabia.weat.gcellcommonmodule.type.MessageType;
 import com.gabia.weat.gcellexcelserver.dto.MessageMetaDto;
 
 public class MessageMetaDtoConverter {

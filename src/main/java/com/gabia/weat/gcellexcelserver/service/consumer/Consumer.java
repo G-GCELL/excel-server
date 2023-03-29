@@ -1,6 +1,6 @@
 package com.gabia.weat.gcellexcelserver.service.consumer;
 
-import com.gabia.weat.gcellexcelserver.dto.MessageWrapperDto;
+import com.gabia.weat.gcellcommonmodule.dto.MessageWrapperDto;
 
 public interface Consumer<T> {
 
